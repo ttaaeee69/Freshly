@@ -8,7 +8,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 120,
+        toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(30),
@@ -16,29 +16,43 @@ class HomePage extends StatelessWidget {
           ),
         ),
         leading: IconButton(
+          icon: const Icon(
+            Icons.account_circle_rounded,
+            size: 60,
+            color: Colors.black,
+          ),
           onPressed: () {},
-          icon: const Icon(Icons.account_circle_rounded,
-              size: 60, color: Colors.black),
+          padding: const EdgeInsets.only(left: 20),
         ),
         centerTitle: false,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Hi Varich Maleevan!",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: HexColor("#2C4340"),
+        title: Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 2.0,
+            children: [
+              Text(
+                "Hi Onnicha Intuwattakul!",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const Text("Welcome back"),
-          ],
+              const Text(
+                "Welcome back",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           IconButton(
-            onPressed: () {},
             icon: const Icon(Icons.circle_notifications_rounded, size: 40),
+            onPressed: () {},
+            padding: const EdgeInsets.only(right: 20),
           ),
         ],
       ),

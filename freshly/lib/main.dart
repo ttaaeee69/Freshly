@@ -20,14 +20,13 @@ class Freshly extends StatelessWidget {
         appBarTheme: AppBarTheme(
           backgroundColor: HexColor('#ADB2D4'),
           titleTextStyle: TextStyle(
-            color: Color(0xFF2C4340),
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            color: HexColor("#2C4340"),
           ),
         ),
         textTheme: TextTheme(
           bodyLarge: TextStyle(color: Color(0xFF2C4340)),
           bodyMedium: TextStyle(color: Color(0xFF2C4340)),
+          bodySmall: TextStyle(color: Color(0xFF2C4340)),
         ),
       ),
       home: const HomePage(),
