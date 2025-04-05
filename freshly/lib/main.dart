@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'pages/home_page.dart';
 
 void main() {
@@ -23,10 +24,19 @@ class Freshly extends StatelessWidget {
             color: HexColor("#2C4340"),
           ),
         ),
-        textTheme: TextTheme(
-          bodyLarge: TextStyle(color: Color(0xFF2C4340)),
-          bodyMedium: TextStyle(color: Color(0xFF2C4340)),
-          bodySmall: TextStyle(color: Color(0xFF2C4340)),
+        textTheme: GoogleFonts.outfitTextTheme(),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          selectedItemColor: Colors.purple,
+          unselectedItemColor: Colors.grey,
+          showUnselectedLabels: true,
+          selectedLabelStyle: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+          ),
         ),
       ),
       home: const HomePage(),

@@ -11,8 +11,8 @@ class HomePage extends StatelessWidget {
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(30),
-            bottomRight: Radius.circular(30),
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
           ),
         ),
         leading: IconButton(
@@ -56,26 +56,56 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class FoodItem extends StatelessWidget {
-  final IconData icon;
-  final String name;
-
-  const FoodItem({required this.icon, required this.name});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: Colors.white,
-        child: Icon(icon, color: Colors.black),
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: NavigationBar(
+          backgroundColor: HexColor("#ADB2D4"),
+          animationDuration: const Duration(milliseconds: 500),
+          indicatorShape: CircleBorder(
+            side: BorderSide(
+              color: HexColor("#E4C1C1"),
+              width: 40,
+            ),
+          ),
+          destinations: [
+            NavigationDestination(
+              icon: Image.asset(
+                "assets/img/home_icon.PNG",
+                width: 40,
+                height: 40,
+              ),
+              label: "Home",
+            ),
+            NavigationDestination(
+              icon: Image.asset(
+                "assets/img/fridge_icon.PNG",
+                width: 40,
+                height: 40,
+              ),
+              label: "Fridge",
+            ),
+            NavigationDestination(
+              icon: Image.asset(
+                "assets/img/menu_icon.PNG",
+                width: 40,
+                height: 40,
+              ),
+              label: "Menu",
+            ),
+            NavigationDestination(
+              icon: Image.asset(
+                "assets/img/account_icon.PNG",
+                width: 40,
+                height: 40,
+              ),
+              label: "Account",
+            ),
+          ],
+        ),
       ),
-      title: Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text('since dd/mm/yyyy'),
-      trailing: Text('x days ago', style: TextStyle(color: Colors.purple)),
     );
   }
 }
