@@ -164,7 +164,7 @@ class _CalendarState extends State<Calendar> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Calendar - ${DateFormat('MMMM').format(shownMonth)}",
+                Text("Calendar - ${DateFormat('MMMM yyyy').format(shownMonth)}",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -218,22 +218,43 @@ class _CalendarState extends State<Calendar> {
           month.month == DateTime.now().month &&
           day == DateTime.now().day);
 
+      // Example Dots
+      // Change this logic later
+      bool showDot = (day % 5 == 0);
+
       dayWidgets.add(
-        Container(
-          margin: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: isToday ? HexColor("#ADB2D4") : HexColor("#EEF1DA"),
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Text(
-              "$day",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: isToday ? HexColor("#EEF1DA") : HexColor("#2C4340"),
+        Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isToday ? HexColor("#ADB2D4") : HexColor("#EEF1DA"),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  "$day",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isToday ? HexColor("#EEF1DA") : HexColor("#2C4340"),
+                  ),
+                ),
               ),
             ),
-          ),
+            if (showDot)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+          ],
         ),
       );
     }

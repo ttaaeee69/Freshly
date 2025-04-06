@@ -17,7 +17,7 @@ class Freshly extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.purple,
-        scaffoldBackgroundColor: HexColor("#DEDEDE"),
+        scaffoldBackgroundColor: HexColor("#EEF1DA"),
         appBarTheme: AppBarTheme(
           backgroundColor: HexColor('#ADB2D4'),
           titleTextStyle: TextStyle(
