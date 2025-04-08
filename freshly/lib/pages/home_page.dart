@@ -75,9 +75,23 @@ class HomePage extends StatelessWidget {
             Container(
               height: 200,
               decoration: BoxDecoration(
-                color: HexColor("#E4C1C1"),
+                color: HexColor("#97A78D"),
                 borderRadius: const BorderRadius.all(
                   Radius.circular(20),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    Text(
+                      "Don't forget this food without expiration date",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
