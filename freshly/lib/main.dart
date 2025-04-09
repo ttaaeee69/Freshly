@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'pages/home_page.dart';
 import 'pages/fridge_page.dart';
 import 'pages/menu_page.dart';
+import 'pages/account_page.dart';
 
 void main() {
   runApp(const Freshly());
@@ -115,6 +116,14 @@ class _PageNavigatorState extends State<PageNavigator> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+              if (_selectedIndex == 3)
+                const Text(
+                  "Login / Sign up",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
             ],
           ),
         ),
@@ -188,7 +197,7 @@ class _PageNavigatorState extends State<PageNavigator> {
           HomePage(),
           FridgePage(),
           MenuPage(),
-          Placeholder(),
+          AccountPage(),
         ],
       ),
     );
