@@ -3,6 +3,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'pages/home_page.dart';
 import 'pages/fridge_page.dart';
+import 'pages/menu_page.dart';
 
 void main() {
   runApp(const Freshly());
@@ -106,6 +107,14 @@ class _PageNavigatorState extends State<PageNavigator> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+              if (_selectedIndex == 2)
+                const Text(
+                  "Find menu to cook ...",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
             ],
           ),
         ),
@@ -178,7 +187,7 @@ class _PageNavigatorState extends State<PageNavigator> {
         children: const [
           HomePage(),
           FridgePage(),
-          Placeholder(),
+          MenuPage(),
           Placeholder(),
         ],
       ),
