@@ -29,8 +29,6 @@ class Freshly extends StatelessWidget {
         ),
         textTheme: GoogleFonts.outfitTextTheme(),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          selectedItemColor: Colors.purple,
-          unselectedItemColor: Colors.grey,
           showUnselectedLabels: true,
           selectedLabelStyle: TextStyle(
             fontSize: 14,
