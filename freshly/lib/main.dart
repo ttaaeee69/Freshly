@@ -27,7 +27,10 @@ class Freshly extends StatelessWidget {
             color: HexColor("#2C4340"),
           ),
         ),
-        textTheme: GoogleFonts.outfitTextTheme(),
+        textTheme: GoogleFonts.outfitTextTheme().apply(
+          bodyColor: HexColor("#2C4340"),
+          displayColor: HexColor("#2C4340"),
+        ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           showUnselectedLabels: true,
           selectedLabelStyle: TextStyle(
