@@ -1,12 +1,20 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'firebase_options.dart';
 import 'pages/home_page.dart';
 import 'pages/fridge_page.dart';
 import 'pages/menu_page.dart';
 import 'pages/account_page.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const Freshly());
 }
 
