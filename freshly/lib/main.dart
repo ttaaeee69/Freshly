@@ -27,17 +27,17 @@ class Freshly extends StatelessWidget {
       title: 'Freshly',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        textTheme: GoogleFonts.outfitTextTheme().apply(
+          bodyColor: HexColor("#2C4340"),
+          displayColor: HexColor("#2C4340"),
+        ),
         primarySwatch: Colors.purple,
         scaffoldBackgroundColor: HexColor("#EEF1DA"),
         appBarTheme: AppBarTheme(
           backgroundColor: HexColor('#ADB2D4'),
-          titleTextStyle: TextStyle(
+          titleTextStyle: GoogleFonts.outfit(
             color: HexColor("#2C4340"),
           ),
-        ),
-        textTheme: GoogleFonts.outfitTextTheme().apply(
-          bodyColor: HexColor("#2C4340"),
-          displayColor: HexColor("#2C4340"),
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           showUnselectedLabels: true,
@@ -97,7 +97,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                 const Text(
                   "Hi Onnicha Intuwattakul!",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -105,7 +105,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                 const Text(
                   "Welcome back",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -113,7 +113,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                 const Text(
                   "Let's explore your fridge",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -121,7 +121,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                 const Text(
                   "Find menu to cook ...",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -129,7 +129,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                 const Text(
                   "Login / Sign up",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
