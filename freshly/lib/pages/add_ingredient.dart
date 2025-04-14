@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:intl/intl.dart';
 
-class AddIngredientPage extends StatelessWidget {
+class AddIngredientPage extends StatefulWidget {
   const AddIngredientPage({super.key});
+
+  @override
+  State<AddIngredientPage> createState() => _AddIngredientPageState();
+}
+
+class _AddIngredientPageState extends State<AddIngredientPage> {
+  DateTime? sinceDate;
+  DateTime? expirationDate;
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +155,7 @@ class AddIngredientPage extends StatelessWidget {
                           ),
                         ),
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: HexColor("#2C4340"),
                         ),
                       ),
@@ -159,22 +168,43 @@ class AddIngredientPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      TextField(
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: HexColor("#EEF1DA"),
-                          contentPadding: const EdgeInsets.symmetric(
+                      GestureDetector(
+                        onTap: () async {
+                          DateTime? selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+                          if (selectedDate != null) {
+                            setState(() => sinceDate = selectedDate);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
                             vertical: 8.0,
                             horizontal: 16.0,
                           ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                            borderSide: BorderSide.none,
+                          decoration: BoxDecoration(
+                            color: HexColor("#EEF1DA"),
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        ),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: HexColor("#2C4340"),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                sinceDate != null
+                                    ? DateFormat("dd/MM/yyyy")
+                                        .format(sinceDate!)
+                                    : "Select date",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: HexColor("#2C4340"),
+                                ),
+                              ),
+                              Icon(Icons.calendar_month),
+                            ],
+                          ),
                         ),
                       ),
                       SizedBox(height: 10),
@@ -186,22 +216,43 @@ class AddIngredientPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      TextField(
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: HexColor("#EEF1DA"),
-                          contentPadding: const EdgeInsets.symmetric(
+                      GestureDetector(
+                        onTap: () async {
+                          DateTime? selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+                          if (selectedDate != null) {
+                            setState(() => expirationDate = selectedDate);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
                             vertical: 8.0,
                             horizontal: 16.0,
                           ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                            borderSide: BorderSide.none,
+                          decoration: BoxDecoration(
+                            color: HexColor("#EEF1DA"),
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        ),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: HexColor("#2C4340"),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                expirationDate != null
+                                    ? DateFormat("dd/MM/yyyy")
+                                        .format(expirationDate!)
+                                    : "Select date",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: HexColor("#2C4340"),
+                                ),
+                              ),
+                              Icon(Icons.calendar_month),
+                            ],
+                          ),
                         ),
                       ),
                     ],
