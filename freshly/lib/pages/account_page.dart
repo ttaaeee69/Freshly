@@ -9,42 +9,58 @@ class AccountPage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 40),
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Color(0xFFF4C7C3), // soft pink
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Column(
-              children: [
-                CustomButton(text: "Sign-up"),
-                SizedBox(height: 15),
-                CustomButton(text: "Log-in"),
-                SizedBox(height: 15),
-                Divider(thickness: 2, color: Colors.black),
-                SizedBox(height: 15),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF9FCE6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    child: Center(
-                      child: Text(
-                        "Continue as guest",
-                        style: TextStyle(color: Colors.black, fontSize: 16),
+          Stack(
+            children: [
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 40),
+                padding: EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  color: Color(0xFFF4C7C3), // soft pink
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Column(
+                  spacing: 15,
+                  children: [
+                    CustomButton(text: "Sign-up"),
+                    CustomButton(text: "Log-in"),
+                    Divider(thickness: 2, color: Colors.black),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFF9FCE6),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 0,
                       ),
-                    ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Center(
+                          child: Text(
+                            "Continue as guest",
+                            style: TextStyle(color: Colors.black, fontSize: 16),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 0, // Adjust the vertical position
+                right: 20, // Adjust the horizontal position
+                child: IconButton(
+                  icon: Icon(
+                    Icons.notifications,
+                    size: 30,
+                    color: Colors.black,
                   ),
-                )
-              ],
-            ),
+                  onPressed: () {
+                    // Handle notification icon press
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -67,12 +83,16 @@ class CustomButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-        minimumSize: Size(double.infinity, 50),
         elevation: 0,
       ),
-      child: Text(
-        text,
-        style: TextStyle(color: Colors.black, fontSize: 16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(color: Colors.black, fontSize: 16),
+          ),
+        ),
       ),
     );
   }

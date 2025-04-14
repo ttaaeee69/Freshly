@@ -127,7 +127,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                 ),
               if (_selectedIndex == 3)
                 const Text(
-                  "Login / Sign up",
+                  "Your Account",
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
