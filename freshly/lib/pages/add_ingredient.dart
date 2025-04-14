@@ -143,6 +143,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                       const SizedBox(height: 6),
                       TextField(
                         decoration: InputDecoration(
+                          isDense: true,
                           filled: true,
                           fillColor: HexColor("#EEF1DA"),
                           contentPadding: const EdgeInsets.symmetric(
