@@ -47,17 +47,12 @@ class AccountPage extends StatelessWidget {
                 ),
               ),
               Positioned(
-                top: 0, // Adjust the vertical position
-                right: 20, // Adjust the horizontal position
-                child: IconButton(
-                  icon: Icon(
-                    Icons.notifications,
-                    size: 30,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    // Handle notification icon press
-                  },
+                top: -15, // Adjust the vertical position
+                right: 15, // Adjust the horizontal position
+                child: Image.asset(
+                  "assets/img/cake.PNG",
+                  width: 60,
+                  height: 60,
                 ),
               ),
             ],
