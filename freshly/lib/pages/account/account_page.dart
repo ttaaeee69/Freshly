@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
+import 'register_page.dart';
+import 'login_page.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -15,7 +18,7 @@ class AccountPage extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: 40),
                 padding: EdgeInsets.all(30),
                 decoration: BoxDecoration(
-                  color: Color(0xFFF4C7C3), // soft pink
+                  color: HexColor("#E4C1C1"), // soft pink
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Column(
@@ -23,11 +26,14 @@ class AccountPage extends StatelessWidget {
                   children: [
                     CustomButton(text: "Sign-up"),
                     CustomButton(text: "Log-in"),
-                    Divider(thickness: 2, color: Colors.black),
+                    Divider(
+                      thickness: 2,
+                      color: HexColor("#2C4340"),
+                    ),
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFF9FCE6),
+                        backgroundColor: HexColor("#EEF1DA"),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -38,7 +44,11 @@ class AccountPage extends StatelessWidget {
                         child: Center(
                           child: Text(
                             "Continue as guest",
-                            style: TextStyle(color: Colors.black, fontSize: 16),
+                            style: TextStyle(
+                              color: HexColor("#2C4340"),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -51,8 +61,8 @@ class AccountPage extends StatelessWidget {
                 right: 15, // Adjust the horizontal position
                 child: Image.asset(
                   "assets/img/cake.PNG",
-                  width: 60,
-                  height: 60,
+                  width: 55,
+                  height: 55,
                 ),
               ),
             ],
@@ -72,9 +82,17 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        if (text == "Sign-up") {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => RegisterPage()));
+        } else if (text == "Log-in") {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => LoginPage()));
+        }
+      },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFB9B8E3), // soft purple
+        backgroundColor: HexColor("#ADB2D4"), // soft purple
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
@@ -85,7 +103,10 @@ class CustomButton extends StatelessWidget {
         child: Center(
           child: Text(
             text,
-            style: TextStyle(color: Colors.black, fontSize: 16),
+            style: TextStyle(
+                color: HexColor("#2C4340"),
+                fontSize: 16,
+                fontWeight: FontWeight.bold),
           ),
         ),
       ),

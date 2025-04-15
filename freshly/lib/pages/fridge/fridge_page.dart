@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:freshly/pages/add_ingredient.dart';
+import 'package:freshly/pages/fridge/add_ingredient.dart';
 import 'package:hexcolor/hexcolor.dart';
-import '../models/ingredient.dart';
+import '../../models/ingredient.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
