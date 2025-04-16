@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:freshly/pages/fridge/add_ingredient.dart';
+import 'add_ingredient.dart';
+import 'add_cooked.dart';
 import 'package:hexcolor/hexcolor.dart';
-import '../../models/ingredient.dart';
+import '../../models/Food.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
@@ -14,208 +15,313 @@ class FridgePage extends StatefulWidget {
 }
 
 class _FridgePageState extends State<FridgePage> {
-  List<Ingredient> _ingredients = [];
+  List<Food> _ingredients = [];
+  List<Food> _cooked = [];
 
   @override
   void initState() {
     super.initState();
-    _refreshIngredients();
+    _refreshFood();
   }
 
-  Future<void> _refreshIngredients() async {
+  String expCalculate(Timestamp startDate, Timestamp expDate) {
+    DateTime start = startDate.toDate();
+    DateTime exp = expDate.toDate();
+    bool isExpired = start.isAfter(exp);
+
+    if (isExpired) {
+      return "expired";
+    } else {
+      int daysLeft = exp.difference(start).inDays;
+      return "$daysLeft days left";
+    }
+  }
+
+  Future<void> _refreshFood() async {
     final snapshot = await FirebaseFirestore.instance
-        .collection("ingredients")
+        .collection("food")
         .orderBy("startDate")
         .get();
 
-    List<Ingredient> loadedIngredients = [];
+    List<Food> loadedIngredients = [];
+    List<Food> loadedCooked = [];
 
     for (var doc in snapshot.docs) {
       final data = doc.data();
-      loadedIngredients.add(
-        Ingredient(
+      Timestamp startDate = data["startDate"];
+      DateTime star = startDate.toDate();
+      String formatDate = DateFormat('dd/MM/yyyy').format(star);
+      if (data["type"] == "ingredient") {
+        loadedIngredients.add(
+          Food(
+            name: data["name"],
+            startDate: formatDate,
+            isExpired: data["expDate"] != null
+                ? expCalculate(
+                    startDate,
+                    data["expDate"],
+                  )
+                : "",
+            type: data["type"],
+          ),
+        );
+      } else if (data["type"] == "cooked") {
+        loadedCooked.add(Food(
           name: data["name"],
-          startDate: data["startDate"].toDate(),
-        ),
-      );
+          startDate: formatDate,
+          isExpired: data["expDate"] != null
+              ? expCalculate(
+                  startDate,
+                  data["expDate"],
+                )
+              : "",
+          type: data["type"],
+        ));
+      }
     }
 
-    setState(() => _ingredients = loadedIngredients);
+    setState(() {
+      _ingredients = loadedIngredients;
+      _cooked = loadedCooked;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final dateFormatter = DateFormat('dd/MM/yyyy');
-
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          // Remove the invalid spacing parameter
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: HexColor("#E4C1C1"),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Column(
+            // Remove the invalid spacing parameter
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: HexColor("#E4C1C1"),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Ingredient",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            IngredientDropdown(),
-                            IconButton(
-                              icon: Container(
-                                decoration: BoxDecoration(
-                                  color: HexColor("#EEF1DA"),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Icon(
-                                    Icons.edit_rounded,
-                                    size: 20,
-                                    color: HexColor("#97A78D"),
-                                  ),
-                                ),
-                              ),
-                              onPressed: () {},
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Ingredient",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    // Don't use Expanded here since the container has no fixed height
-                    _ingredients.isEmpty
-                        ? const Center(
-                            child: Text("ไม่มีข้อมูล"),
-                          )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: _ingredients.length,
-                            itemBuilder: (context, index) {
-                              final ingredient = _ingredients[index];
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                decoration: BoxDecoration(
-                                  color: HexColor("#EEF1DA"),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    child: Text(
-                                      ingredient.name.substring(0, 1),
+                          ),
+                          Row(
+                            children: [
+                              IngredientDropdown(),
+                              IconButton(
+                                icon: Container(
+                                  decoration: BoxDecoration(
+                                    color: HexColor("#EEF1DA"),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      Icons.edit_rounded,
+                                      size: 20,
+                                      color: HexColor("#97A78D"),
                                     ),
                                   ),
-                                  title: Text(
-                                    ingredient.name,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: HexColor("#2C4340"),
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    "since ${dateFormatter.format(ingredient.startDate)}",
-                                  ),
                                 ),
-                              );
-                            },
+                                onPressed: () {},
+                              ),
+                            ],
                           ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => const AddIngredientPage(),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      // Don't use Expanded here since the container has no fixed height
+                      _ingredients.isEmpty
+                          ? const Center(
+                              child: Text("ไม่มีข้อมูล"),
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _ingredients.length,
+                              itemBuilder: (context, index) {
+                                final ingredient = _ingredients[index];
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  decoration: BoxDecoration(
+                                    color: HexColor("#EEF1DA"),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      child: Text(
+                                        ingredient.name.substring(0, 1),
+                                      ),
+                                    ),
+                                    title: Text(
+                                      ingredient.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: HexColor("#2C4340"),
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      "since ${ingredient.startDate}",
+                                    ),
+                                    trailing: Text(ingredient.isExpired!),
+                                  ),
+                                );
+                              },
+                            ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => const AddIngredientPage(),
+                            ),
+                          ).then((_) => _refreshFood());
+                        },
+                        child: Container(
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: HexColor("#D9D9D9"),
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        );
-                      },
-                      child: Container(
-                        height: 64,
-                        decoration: BoxDecoration(
-                          color: HexColor("#D9D9D9"),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Center(
-                          child: Icon(
-                            Icons.add_circle_outline_rounded,
-                            size: 28,
-                            color: HexColor("#2C4340"),
+                          child: Center(
+                            child: Icon(
+                              Icons.add_circle_outline_rounded,
+                              size: 28,
+                              color: HexColor("#2C4340"),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 30), // Add spacing between containers
-            Container(
-              decoration: BoxDecoration(
-                color: HexColor("#ADB2D4"),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
+              const SizedBox(height: 30), // Add spacing between containers
+              Container(
+                decoration: BoxDecoration(
+                  color: HexColor("#ADB2D4"),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Cooked",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Cooked",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Row(
-                          children: [
-                            IngredientDropdown(),
-                            IconButton(
-                              icon: Container(
-                                decoration: BoxDecoration(
-                                  color: HexColor("#EEF1DA"),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Icon(
-                                    Icons.edit_rounded,
-                                    size: 20,
-                                    color: HexColor("#97A78D"),
+                          Row(
+                            children: [
+                              IngredientDropdown(),
+                              IconButton(
+                                icon: Container(
+                                  decoration: BoxDecoration(
+                                    color: HexColor("#EEF1DA"),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      Icons.edit_rounded,
+                                      size: 20,
+                                      color: HexColor("#97A78D"),
+                                    ),
                                   ),
                                 ),
+                                onPressed: () {},
                               ),
-                              onPressed: () {},
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      _cooked.isEmpty
+                          ? const Center(
+                              child: Text("ไม่มีข้อมูล"),
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _cooked.length,
+                              itemBuilder: (context, index) {
+                                final cooked = _cooked[index];
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  decoration: BoxDecoration(
+                                    color: HexColor("#EEF1DA"),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      child: Text(
+                                        cooked.name.substring(0, 1),
+                                      ),
+                                    ),
+                                    title: Text(
+                                      cooked.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: HexColor("#2C4340"),
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      "since ${cooked.startDate}",
+                                    ),
+                                    trailing: Text(cooked.isExpired!),
+                                  ),
+                                );
+                              },
                             ),
-                          ],
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => const AddCookedPage(),
+                            ),
+                          ).then((_) => _refreshFood());
+                        },
+                        child: Container(
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: HexColor("#D9D9D9"),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.add_circle_outline_rounded,
+                              size: 28,
+                              color: HexColor("#2C4340"),
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

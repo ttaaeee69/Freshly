@@ -1,23 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:freshly/models/Food.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 
-class AddIngredientPage extends StatefulWidget {
-  const AddIngredientPage({super.key});
+import '../../models/Food.dart';
+
+class AddCookedPage extends StatefulWidget {
+  const AddCookedPage({super.key});
 
   @override
-  State<AddIngredientPage> createState() => _AddIngredientPageState();
+  State<AddCookedPage> createState() => _AddCookedPageState();
 }
 
-class _AddIngredientPageState extends State<AddIngredientPage> {
+class _AddCookedPageState extends State<AddCookedPage> {
   DateTime? startDate;
   DateTime? expirationDate;
 
   TextEditingController _nameController = TextEditingController();
 
-  Future<void> _addIngredient() async {
+  Future<void> _addCooked() async {
     final name = _nameController.text.trim();
 
     if (name.isEmpty || startDate.toString().isEmpty) {
@@ -25,12 +26,6 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
         const SnackBar(content: Text('Please fill in all fields')),
       );
     }
-
-    print(Food(
-            name: name,
-            startDate: startDate.toString(),
-            expDate: expirationDate.toString())
-        .toMap());
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Ingredient added successfully')),
@@ -40,7 +35,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
       name: name,
       startDate: startDate.toString(),
       expDate: expirationDate.toString(),
-      type: "ingredient",
+      type: "cooked",
     );
     await FirebaseFirestore.instance.collection("food").add(ingredient.toMap());
 
@@ -232,7 +227,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                                 startDate != null
                                     ? DateFormat("dd/MM/yyyy")
                                         .format(startDate!)
-                                    : "",
+                                    : "Select date",
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: HexColor("#2C4340"),
@@ -245,7 +240,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        "Expiration Date : (Optional)",
+                        "Expiration Date :",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -280,7 +275,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                                 expirationDate != null
                                     ? DateFormat("dd/MM/yyyy")
                                         .format(expirationDate!)
-                                    : "",
+                                    : "Select date",
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: HexColor("#2C4340"),
@@ -301,7 +296,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                 backgroundColor: HexColor("#ADB2D4"),
               ),
               onPressed: () {
-                _addIngredient();
+                _addCooked();
               },
               child: Text(
                 "Done",
