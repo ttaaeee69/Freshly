@@ -4,13 +4,14 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'pages/home_page.dart';
-import 'pages/fridge_page.dart';
+import 'pages/fridge/fridge_page.dart';
 import 'pages/menu_page.dart';
-import 'pages/account_page.dart';
+import 'pages/account/account_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -37,17 +38,6 @@ class Freshly extends StatelessWidget {
           backgroundColor: HexColor('#ADB2D4'),
           titleTextStyle: GoogleFonts.outfit(
             color: HexColor("#2C4340"),
-          ),
-        ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          showUnselectedLabels: true,
-          selectedLabelStyle: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-          unselectedLabelStyle: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
           ),
         ),
       ),
@@ -127,7 +117,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                 ),
               if (_selectedIndex == 3)
                 const Text(
-                  "Login / Sign up",
+                  "Your Account",
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

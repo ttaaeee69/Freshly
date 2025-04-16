@@ -1,17 +1,46 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 
-class AddIngredientPage extends StatefulWidget {
-  const AddIngredientPage({super.key});
+import '../../models/Food.dart';
+
+class AddCookedPage extends StatefulWidget {
+  const AddCookedPage({super.key});
 
   @override
-  State<AddIngredientPage> createState() => _AddIngredientPageState();
+  State<AddCookedPage> createState() => _AddCookedPageState();
 }
 
-class _AddIngredientPageState extends State<AddIngredientPage> {
-  DateTime? sinceDate;
+class _AddCookedPageState extends State<AddCookedPage> {
+  DateTime? startDate;
   DateTime? expirationDate;
+
+  TextEditingController _nameController = TextEditingController();
+
+  Future<void> _addCooked() async {
+    final name = _nameController.text.trim();
+
+    if (name.isEmpty || startDate.toString().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Ingredient added successfully')),
+    );
+
+    final ingredient = Food(
+      name: name,
+      startDate: startDate.toString(),
+      expDate: expirationDate.toString(),
+      type: "cooked",
+    );
+    await FirebaseFirestore.instance.collection("food").add(ingredient.toMap());
+
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +171,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                       ),
                       const SizedBox(height: 6),
                       TextField(
+                        controller: _nameController,
                         decoration: InputDecoration(
                           isDense: true,
                           filled: true,
@@ -178,7 +208,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                             lastDate: DateTime(2100),
                           );
                           if (selectedDate != null) {
-                            setState(() => sinceDate = selectedDate);
+                            setState(() => startDate = selectedDate);
                           }
                         },
                         child: Container(
@@ -194,9 +224,9 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                sinceDate != null
+                                startDate != null
                                     ? DateFormat("dd/MM/yyyy")
-                                        .format(sinceDate!)
+                                        .format(startDate!)
                                     : "Select date",
                                 style: TextStyle(
                                   fontSize: 16,
@@ -265,7 +295,9 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: HexColor("#ADB2D4"),
               ),
-              onPressed: () {},
+              onPressed: () {
+                _addCooked();
+              },
               child: Text(
                 "Done",
                 style: TextStyle(
