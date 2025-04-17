@@ -1,8 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:dio/dio.dart';
 
-class MenuPage extends StatelessWidget {
+class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
+
+  @override
+  State<MenuPage> createState() => _MenuPageState();
+}
+
+class _MenuPageState extends State<MenuPage> {
+  @override
+  void initState() {
+    super.initState();
+    // fetchSpoonacularApi();
+  }
+
+  final String spoonacularApi =
+      "https://api.spoonacular.com/recipes/complexSearch?apiKey=54b2b8be87124363836179e73a645e7d&query=chicken&number=1";
+
+  Dio dio = Dio();
+
+  // Future<void> fetchSpoonacularApi() async {
+  //   try {
+  //     final response = await dio.get(spoonacularApi);
+  //     print(response.data);
+  //   } catch (e) {
+  //     print("Error fetching data: $e");
+  //   }
+  // }
+
+  TextEditingController searchController = TextEditingController();
+
+  void searchMenu() {
+    String searchText = searchController.text;
+    // Implement your search logic here
+    print("Searching for: $searchText");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +48,7 @@ class MenuPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 30.0, right: 30.0, top: 20.0),
             child: TextField(
+              controller: searchController,
               decoration: InputDecoration(
                 labelText: 'Search for menu by ingredient . . .',
                 labelStyle: TextStyle(
@@ -28,7 +63,15 @@ class MenuPage extends StatelessWidget {
                   vertical: 8.0,
                   horizontal: 16.0,
                 ),
-                suffixIcon: Icon(Icons.search),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    searchMenu();
+                  },
+                  icon: Icon(
+                    Icons.search,
+                    color: HexColor("#8F9E85"),
+                  ),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
