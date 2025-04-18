@@ -51,7 +51,9 @@ class AccountPage extends StatelessWidget {
                         ),
                         elevation: 0,
                       ),
-                      child: Padding(
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Text(
                           "Continue as guest",
