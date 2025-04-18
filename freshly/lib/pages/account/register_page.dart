@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:form_field_validator/form_field_validator.dart';
@@ -11,6 +12,28 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  bool _isObscure = true;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _createUser(context) async {
+    final email = _emailController.text.trim().toLowerCase();
+    final password = _passwordController.text;
+
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Registration failed: ${e.toString()}"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +92,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         const SizedBox(height: 6),
                         TextFormField(
+                          controller: _emailController,
                           validator: MultiValidator(
                             [
                               RequiredValidator(
@@ -76,9 +100,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               EmailValidator(
                                   errorText: "Email Format Incorrect!!!")
                             ],
-                          ),
+                          ).call,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
-                            isDense: true,
                             filled: true,
                             fillColor: HexColor("#EEF1DA"),
                             contentPadding: const EdgeInsets.symmetric(
@@ -106,10 +130,18 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         const SizedBox(height: 6),
                         TextFormField(
-                          validator: RequiredValidator(
-                              errorText: "Please enter your Password"),
+                          controller: _passwordController,
+                          validator: MultiValidator(
+                            [
+                              RequiredValidator(
+                                  errorText: "Please enter your Password"),
+                              MinLengthValidator(6,
+                                  errorText:
+                                      "Password must be at least 6 characters long"),
+                            ],
+                          ).call,
+                          obscureText: _isObscure,
                           decoration: InputDecoration(
-                            isDense: true,
                             filled: true,
                             fillColor: HexColor("#EEF1DA"),
                             contentPadding: const EdgeInsets.symmetric(
@@ -120,6 +152,19 @@ class _RegisterPageState extends State<RegisterPage> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20)),
                               borderSide: BorderSide.none,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: HexColor("#2C4340"),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure = !_isObscure;
+                                });
+                              },
                             ),
                           ),
                           style: TextStyle(
@@ -140,6 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
+                  _createUser(context);
                   Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(

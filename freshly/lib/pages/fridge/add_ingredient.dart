@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:freshly/models/Food.dart';
+import 'package:freshly/models/food.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 
@@ -15,9 +15,9 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
   DateTime? startDate;
   DateTime? expirationDate;
 
-  TextEditingController _nameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
-  Future<void> _addIngredient() async {
+  Future<void> _addIngredient(context) async {
     final name = _nameController.text.trim();
 
     if (name.isEmpty || startDate.toString().isEmpty) {
@@ -25,12 +25,6 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
         const SnackBar(content: Text('Please fill in all fields')),
       );
     }
-
-    print(Food(
-            name: name,
-            startDate: startDate.toString(),
-            expDate: expirationDate.toString())
-        .toMap());
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Ingredient added successfully')),
@@ -301,7 +295,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                 backgroundColor: HexColor("#ADB2D4"),
               ),
               onPressed: () {
-                _addIngredient();
+                _addIngredient(context);
               },
               child: Text(
                 "Done",

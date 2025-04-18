@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'register_page.dart';
@@ -31,7 +32,18 @@ class AccountPage extends StatelessWidget {
                       color: HexColor("#2C4340"),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        try {
+                          FirebaseAuth.instance.signInAnonymously();
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Login failed: ${e.toString()}"),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: HexColor("#EEF1DA"),
                         shape: RoundedRectangleBorder(
@@ -41,14 +53,12 @@ class AccountPage extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Center(
-                          child: Text(
-                            "Continue as guest",
-                            style: TextStyle(
-                              color: HexColor("#2C4340"),
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        child: Text(
+                          "Continue as guest",
+                          style: TextStyle(
+                            color: HexColor("#2C4340"),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

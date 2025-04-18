@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -11,6 +12,35 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  bool _isObscure = true;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _login(context) async {
+    final email = _emailController.text.trim().toLowerCase();
+    final password = _passwordController.text;
+
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Login successful!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Login failed: ${e.toString()}"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +99,8 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 6),
                         TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
                           validator: MultiValidator(
                             [
                               RequiredValidator(
@@ -76,9 +108,8 @@ class _LoginPageState extends State<LoginPage> {
                               EmailValidator(
                                   errorText: "Email Format Incorrect!!!")
                             ],
-                          ),
+                          ).call,
                           decoration: InputDecoration(
-                            isDense: true,
                             filled: true,
                             fillColor: HexColor("#EEF1DA"),
                             contentPadding: const EdgeInsets.symmetric(
@@ -106,10 +137,11 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 6),
                         TextFormField(
+                          controller: _passwordController,
+                          obscureText: _isObscure,
                           validator: RequiredValidator(
-                              errorText: "Please enter your Password"),
+                              errorText: "Please enter your Password").call,
                           decoration: InputDecoration(
-                            isDense: true,
                             filled: true,
                             fillColor: HexColor("#EEF1DA"),
                             contentPadding: const EdgeInsets.symmetric(
@@ -120,6 +152,21 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20)),
                               borderSide: BorderSide.none,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: HexColor("#2C4340"),
+                              ),
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    _isObscure = !_isObscure;
+                                  },
+                                );
+                              },
                             ),
                           ),
                           style: TextStyle(
@@ -140,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
-                  Navigator.pop(context);
+                  _login(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
