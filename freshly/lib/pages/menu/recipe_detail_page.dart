@@ -9,7 +9,6 @@ class RecipeDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = recipe["title"];
-    final imageUrl = recipe["image"];
     final ingredients = recipe["extendedIngredients"] ?? [];
     final instructions = recipe["instructions"] ?? "No instructions available.";
 
