@@ -87,6 +87,17 @@ class _FridgePageState extends State<FridgePage> {
     });
   }
 
+  Future<void> _deleteFood(String name) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection("food")
+        .where("name", isEqualTo: name)
+        .get();
+
+    for (var doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,7 +157,7 @@ class _FridgePageState extends State<FridgePage> {
                       // Don't use Expanded here since the container has no fixed height
                       _ingredients.isEmpty
                           ? const Center(
-                              child: Text("ไม่มีข้อมูล"),
+                              child: Text(""),
                             )
                           : ListView.builder(
                               shrinkWrap: true,
@@ -155,31 +166,71 @@ class _FridgePageState extends State<FridgePage> {
                               itemBuilder: (context, index) {
                                 final ingredient = _ingredients[index];
                                 final isExpired = ingredient.isExpired;
+
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 10),
-                                  decoration: BoxDecoration(
-                                    color: isExpired == "expired"
-                                        ? HexColor("#D6805B")
-                                        : HexColor("#EEF1DA"),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: ListTile(
-                                    leading: CircleAvatar(
-                                      child: Text(
-                                        ingredient.name.substring(0, 1),
+                                  child: Dismissible(
+                                    key: Key(ingredient.name),
+                                    direction: DismissDirection.startToEnd,
+                                    onDismissed: (direction) {
+                                      _deleteFood(ingredient.name);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            "${ingredient.name} deleted",
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    background: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Container(
+                                        alignment: Alignment.centerLeft,
+                                        padding:
+                                            const EdgeInsets.only(left: 20),
+                                        color: Colors.red,
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.delete,
+                                                color: Colors.white),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "Delete",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                    title: Text(
-                                      ingredient.name,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: HexColor("#2C4340"),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: isExpired == "expired"
+                                            ? HexColor("#D6805B")
+                                            : HexColor("#EEF1DA"),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: ListTile(
+                                        leading: CircleAvatar(
+                                          child: Text(
+                                            ingredient.name.substring(0, 1),
+                                          ),
+                                        ),
+                                        title: Text(
+                                          ingredient.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: HexColor("#2C4340"),
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          "since ${ingredient.startDate}",
+                                        ),
+                                        trailing: Text(ingredient.isExpired!),
                                       ),
                                     ),
-                                    subtitle: Text(
-                                      "since ${ingredient.startDate}",
-                                    ),
-                                    trailing: Text(ingredient.isExpired!),
                                   ),
                                 );
                               },
@@ -261,7 +312,7 @@ class _FridgePageState extends State<FridgePage> {
                       const SizedBox(height: 10),
                       _cooked.isEmpty
                           ? const Center(
-                              child: Text("ไม่มีข้อมูล"),
+                              child: Text(""),
                             )
                           : ListView.builder(
                               shrinkWrap: true,
@@ -269,29 +320,75 @@ class _FridgePageState extends State<FridgePage> {
                               itemCount: _cooked.length,
                               itemBuilder: (context, index) {
                                 final cooked = _cooked[index];
+                                final isExpired = cooked.isExpired;
+
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 10),
-                                  decoration: BoxDecoration(
-                                    color: HexColor("#EEF1DA"),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: ListTile(
-                                    leading: CircleAvatar(
-                                      child: Text(
-                                        cooked.name.substring(0, 1),
+                                  child: Dismissible(
+                                    key: Key(cooked.name),
+                                    direction: DismissDirection.startToEnd,
+                                    onDismissed: (direction) {
+                                      _deleteFood(cooked.name);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            "${cooked.name} deleted",
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    background: ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                          20), // Apply border radius
+                                      child: Container(
+                                        alignment: Alignment.centerLeft,
+                                        padding:
+                                            const EdgeInsets.only(left: 20),
+                                        color: Colors.red,
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.delete,
+                                                color: Colors.white),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "Delete",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                    title: Text(
-                                      cooked.name,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: HexColor("#2C4340"),
+                                    child: Container(
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      decoration: BoxDecoration(
+                                        color: isExpired == "expired"
+                                            ? HexColor("#D6805B")
+                                            : HexColor("#EEF1DA"),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: ListTile(
+                                        leading: CircleAvatar(
+                                          child: Text(
+                                            cooked.name.substring(0, 1),
+                                          ),
+                                        ),
+                                        title: Text(
+                                          cooked.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: HexColor("#2C4340"),
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          "since ${cooked.startDate}",
+                                        ),
+                                        trailing: Text(cooked.isExpired!),
                                       ),
                                     ),
-                                    subtitle: Text(
-                                      "since ${cooked.startDate}",
-                                    ),
-                                    trailing: Text(cooked.isExpired!),
                                   ),
                                 );
                               },
