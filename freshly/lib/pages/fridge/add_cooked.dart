@@ -227,7 +227,7 @@ class _AddCookedPageState extends State<AddCookedPage> {
                                 startDate != null
                                     ? DateFormat("dd/MM/yyyy")
                                         .format(startDate!)
-                                    : "Select date",
+                                    : "",
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: HexColor("#2C4340"),
@@ -275,7 +275,7 @@ class _AddCookedPageState extends State<AddCookedPage> {
                                 expirationDate != null
                                     ? DateFormat("dd/MM/yyyy")
                                         .format(expirationDate!)
-                                    : "Select date",
+                                    : "",
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: HexColor("#2C4340"),

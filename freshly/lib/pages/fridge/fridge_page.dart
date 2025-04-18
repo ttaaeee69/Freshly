@@ -26,8 +26,9 @@ class _FridgePageState extends State<FridgePage> {
 
   String expCalculate(Timestamp startDate, Timestamp expDate) {
     DateTime start = startDate.toDate();
+    DateTime now = DateTime.now();
     DateTime exp = expDate.toDate();
-    bool isExpired = start.isAfter(exp);
+    bool isExpired = now.isAfter(exp);
 
     if (isExpired) {
       return "expired";
@@ -153,10 +154,13 @@ class _FridgePageState extends State<FridgePage> {
                               itemCount: _ingredients.length,
                               itemBuilder: (context, index) {
                                 final ingredient = _ingredients[index];
+                                final isExpired = ingredient.isExpired;
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 10),
                                   decoration: BoxDecoration(
-                                    color: HexColor("#EEF1DA"),
+                                    color: isExpired == "expired"
+                                        ? HexColor("#D6805B")
+                                        : HexColor("#EEF1DA"),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: ListTile(

@@ -8,45 +8,47 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          spacing: 30,
-          children: [
-            Container(
-              height: 386,
-              decoration: BoxDecoration(
-                color: HexColor("#E4C1C1"),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Column(
+            spacing: 30,
+            children: [
+              Container(
+                height: 386,
+                decoration: BoxDecoration(
+                  color: HexColor("#E4C1C1"),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
                 ),
+                child: Calendar(),
               ),
-              child: Calendar(),
-            ),
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: HexColor("#97A78D"),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  color: HexColor("#97A78D"),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  children: [
-                    Text(
-                      "Don't forget this food without expiration date",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Don't forget this food without expiration date",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

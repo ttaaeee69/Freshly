@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'pages/home_page.dart';
 import 'pages/fridge/fridge_page.dart';
-import 'pages/menu_page.dart';
+import 'pages/menu/menu_page.dart';
 import 'pages/account/account_page.dart';
 
 Future<void> main() async {
@@ -21,7 +21,7 @@ Future<void> main() async {
 
 class Freshly extends StatelessWidget {
   const Freshly({super.key});
-
+ 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
