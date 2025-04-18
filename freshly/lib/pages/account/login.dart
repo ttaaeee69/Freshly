@@ -4,8 +4,8 @@ import 'package:hexcolor/hexcolor.dart';
 import 'register_page.dart';
 import 'login_page.dart';
 
-class AccountPage extends StatelessWidget {
-  const AccountPage({super.key});
+class FirstLoginPage extends StatelessWidget {
+  const FirstLoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -22,8 +23,24 @@ class _RegisterPageState extends State<RegisterPage> {
     final password = _passwordController.text;
 
     try {
-      await FirebaseAuth.instance
+      UserCredential user = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+      FirebaseFirestore.instance.collection("user").add(
+        {
+          "uid": user.user!.uid,
+          "email": email,
+          "profileImage": "",
+        },
+      ).then(
+        (value) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Registration successful!"),
+              backgroundColor: Colors.green,
+            ),
+          );
+        },
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -183,9 +200,9 @@ class _RegisterPageState extends State<RegisterPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: HexColor("#ADB2D4"),
               ),
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  _createUser(context);
+                  await _createUser(context);
                   Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(

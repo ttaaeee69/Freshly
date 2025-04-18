@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +16,7 @@ class AddCookedPage extends StatefulWidget {
 class _AddCookedPageState extends State<AddCookedPage> {
   DateTime? startDate;
   DateTime? expirationDate;
+  User user = FirebaseAuth.instance.currentUser!;
 
   final TextEditingController _nameController = TextEditingController();
 
@@ -32,6 +34,7 @@ class _AddCookedPageState extends State<AddCookedPage> {
     );
 
     final cooked = Food(
+      uid: user.uid,
       name: name,
       startDate: startDate.toString(),
       expDate: expirationDate.toString(),

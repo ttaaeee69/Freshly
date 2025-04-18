@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Food {
+  final String uid;
+  final String? fid;
   final String name;
   final String startDate;
   final String? expDate;
@@ -8,7 +10,9 @@ class Food {
   final String? type;
 
   Food(
-      {required this.name,
+      {required this.uid,
+      this.fid,
+      required this.name,
       required this.startDate,
       this.expDate,
       this.isExpired,
@@ -16,6 +20,7 @@ class Food {
 
   Map<String, dynamic> toMap() {
     return {
+      "uid": uid,
       "name": name,
       "startDate": Timestamp.fromDate(DateTime.parse(startDate)),
       "expDate": expDate != "null"

@@ -1,7 +1,7 @@
 class Profile {
-  String id;
+  String uid;
   String email;
   String? profileImage;
 
-  Profile({required this.id, required this.email, this.profileImage});
+  Profile({required this.uid, required this.email, this.profileImage});
 }

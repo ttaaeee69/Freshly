@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'add_ingredient.dart';
@@ -17,6 +18,7 @@ class FridgePage extends StatefulWidget {
 class _FridgePageState extends State<FridgePage> {
   List<Food> _ingredients = [];
   List<Food> _cooked = [];
+  User user = FirebaseAuth.instance.currentUser!;
 
   @override
   void initState() {
@@ -41,7 +43,8 @@ class _FridgePageState extends State<FridgePage> {
   Future<void> _refreshFood() async {
     final snapshot = await FirebaseFirestore.instance
         .collection("food")
-        .orderBy("startDate")
+        .where("uid", isEqualTo: user.uid)
+        .orderBy("startDate", descending: true)
         .get();
 
     List<Food> loadedIngredients = [];
@@ -55,6 +58,8 @@ class _FridgePageState extends State<FridgePage> {
       if (data["type"] == "ingredient") {
         loadedIngredients.add(
           Food(
+            uid: user.uid,
+            fid: doc.id,
             name: data["name"],
             startDate: formatDate,
             isExpired: data["expDate"] != null
@@ -68,6 +73,8 @@ class _FridgePageState extends State<FridgePage> {
         );
       } else if (data["type"] == "cooked") {
         loadedCooked.add(Food(
+          uid: user.uid,
+          fid: doc.id,
           name: data["name"],
           startDate: formatDate,
           isExpired: data["expDate"] != null
@@ -79,6 +86,7 @@ class _FridgePageState extends State<FridgePage> {
           type: data["type"],
         ));
       }
+      print(doc.id);
     }
 
     setState(() {
@@ -87,15 +95,8 @@ class _FridgePageState extends State<FridgePage> {
     });
   }
 
-  Future<void> _deleteFood(String name) async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection("food")
-        .where("name", isEqualTo: name)
-        .get();
-
-    for (var doc in snapshot.docs) {
-      await doc.reference.delete();
-    }
+  Future<void> _deleteFood(String fid) async {
+    await FirebaseFirestore.instance.collection("food").doc(fid).delete();
   }
 
   @override
@@ -173,7 +174,7 @@ class _FridgePageState extends State<FridgePage> {
                                     key: Key(ingredient.name),
                                     direction: DismissDirection.startToEnd,
                                     onDismissed: (direction) {
-                                      _deleteFood(ingredient.name);
+                                      _deleteFood(ingredient.fid!);
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
@@ -328,7 +329,7 @@ class _FridgePageState extends State<FridgePage> {
                                     key: Key(cooked.name),
                                     direction: DismissDirection.startToEnd,
                                     onDismissed: (direction) {
-                                      _deleteFood(cooked.name);
+                                      _deleteFood(cooked.fid!);
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(

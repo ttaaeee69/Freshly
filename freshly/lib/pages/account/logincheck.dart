@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'account_page.dart';
-import 'loggedin_page.dart';
+import '../../page_navigator.dart';
+import 'login.dart';
 
 class LoginCheck extends StatelessWidget {
   const LoginCheck({super.key});
@@ -15,9 +15,9 @@ class LoginCheck extends StatelessWidget {
             if (snapshot.hasData) {
               User? user = snapshot.data;
 
-              return LoggedInPage(user: user!);
+              return PageNavigator(user: user!);
             } else {
-              return AccountPage();
+              return FirstLoginPage();
             }
           }
           return CircularProgressIndicator();

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freshly/models/food.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -14,6 +15,7 @@ class AddIngredientPage extends StatefulWidget {
 class _AddIngredientPageState extends State<AddIngredientPage> {
   DateTime? startDate;
   DateTime? expirationDate;
+  User user = FirebaseAuth.instance.currentUser!;
 
   final TextEditingController _nameController = TextEditingController();
 
@@ -31,6 +33,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
     );
 
     final ingredient = Food(
+      uid: user.uid,
       name: name,
       startDate: startDate.toString(),
       expDate: expirationDate.toString(),
