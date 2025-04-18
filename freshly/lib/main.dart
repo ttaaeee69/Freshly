@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
+import 'pages/account/logincheck.dart';
 import 'pages/home_page.dart';
 import 'pages/fridge/fridge_page.dart';
 import 'pages/menu/menu_page.dart';
-import 'pages/account/account_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +21,7 @@ Future<void> main() async {
 
 class Freshly extends StatelessWidget {
   const Freshly({super.key});
- 
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -196,7 +196,7 @@ class _PageNavigatorState extends State<PageNavigator> {
           HomePage(),
           FridgePage(),
           MenuPage(),
-          AccountPage(),
+          LoginCheck(),
         ],
       ),
     );

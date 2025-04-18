@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/Food.dart';
+import '../../models/food.dart';
 
 class AddCookedPage extends StatefulWidget {
   const AddCookedPage({super.key});
@@ -16,9 +16,9 @@ class _AddCookedPageState extends State<AddCookedPage> {
   DateTime? startDate;
   DateTime? expirationDate;
 
-  TextEditingController _nameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
-  Future<void> _addCooked() async {
+  Future<void> _addCooked(context) async {
     final name = _nameController.text.trim();
 
     if (name.isEmpty || startDate.toString().isEmpty) {
@@ -28,16 +28,16 @@ class _AddCookedPageState extends State<AddCookedPage> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Ingredient added successfully')),
+      const SnackBar(content: Text('Food added successfully')),
     );
 
-    final ingredient = Food(
+    final cooked = Food(
       name: name,
       startDate: startDate.toString(),
       expDate: expirationDate.toString(),
       type: "cooked",
     );
-    await FirebaseFirestore.instance.collection("food").add(ingredient.toMap());
+    await FirebaseFirestore.instance.collection("food").add(cooked.toMap());
 
     Navigator.pop(context);
   }
@@ -296,7 +296,7 @@ class _AddCookedPageState extends State<AddCookedPage> {
                 backgroundColor: HexColor("#ADB2D4"),
               ),
               onPressed: () {
-                _addCooked();
+                _addCooked(context);
               },
               child: Text(
                 "Done",

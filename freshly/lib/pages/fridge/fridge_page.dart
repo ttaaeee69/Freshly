@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'add_ingredient.dart';
 import 'add_cooked.dart';
 import 'package:hexcolor/hexcolor.dart';
-import '../../models/Food.dart';
+import '../../models/food.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
