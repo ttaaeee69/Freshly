@@ -15,7 +15,7 @@ class _MenuPageState extends State<MenuPage> {
   final String apiKey =
       "54b2b8be87124363836179e73a645e7d"; // Replace with your API key
   Dio dio = Dio();
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   List<dynamic> recipes = [];
   String mealType = "breakfast"; // Default meal type
