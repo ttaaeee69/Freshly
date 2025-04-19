@@ -24,7 +24,7 @@ class _MenuPageState extends State<MenuPage> {
   void initState() {
     super.initState();
     determineMealType(); // Determine the meal type based on the time of day
-    fetchRecipes(""); // Fetch random recipes for the determined meal type
+    // fetchRecipes(""); // Fetch random recipes for the determined meal type
   }
 
   void determineMealType() {
