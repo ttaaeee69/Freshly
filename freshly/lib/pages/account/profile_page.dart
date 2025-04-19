@@ -18,6 +18,50 @@ class _ProfilePageState extends State<ProfilePage> {
   File? _selectedImage;
   User user = FirebaseAuth.instance.currentUser!;
   bool isEdited = false;
+  String? _profileImageUrl;
+  String? _username;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfileImage();
+  }
+
+  Future<void> _fetchProfileImage() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection(
+              'user') // Ensure this matches your Firestore collection name
+          .where("uid", isEqualTo: user.uid)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final userDoc = querySnapshot.docs.first;
+        String? imageUrl = userDoc['profileImage'];
+        String? username = userDoc[
+            'username']; // Assuming 'username' is the field name in Firestore
+
+        setState(() {
+          if (imageUrl != null && imageUrl.isNotEmpty) {
+            _profileImageUrl = imageUrl;
+          } else {
+            print("No profile image found for user.");
+          }
+
+          if (username != null && username.isNotEmpty) {
+            _username =
+                username; // Add a new state variable `_username` to store the username
+          } else {
+            print("No username found for user.");
+          }
+        });
+      } else {
+        print("No user document found for UID: ${user.uid}");
+      }
+    } catch (error) {
+      print("Error fetching profile image and username: $error");
+    }
+  }
 
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
@@ -34,27 +78,54 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<String> _uploadImageToFirebase() async {
-    if (_selectedImage == null) return "";
+    if (_selectedImage == null) {
+      throw Exception("No image selected for upload.");
+    }
 
-    final storageRef = FirebaseStorage.instance.ref();
-    final imageRef = storageRef.child('profile_images/${_selectedImage!.path}');
-    await imageRef.putFile(_selectedImage!);
-    return await imageRef.getDownloadURL();
+    try {
+      final storageRef = FirebaseStorage.instance.ref();
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final imageRef = storageRef.child('profile_images/$fileName.jpg');
+
+      print("Uploading image: ${_selectedImage!.path}");
+      await imageRef.putFile(_selectedImage!);
+
+      final downloadUrl = await imageRef.getDownloadURL();
+      print("Image uploaded successfully: $downloadUrl");
+      return downloadUrl;
+    } catch (e) {
+      print("Error uploading image: $e");
+      throw Exception("Failed to upload image: $e");
+    }
   }
 
   Future<void> _updateProfileImage() async {
     if (_selectedImage != null) {
-      String imageUrl = await _uploadImageToFirebase();
-      final getUserData = await FirebaseFirestore.instance
-          .collection('users')
-          .where("uid", isEqualTo: user.uid)
-          .get();
-      if (getUserData.docs.isNotEmpty) {
-        final userDoc = getUserData.docs.first;
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userDoc.id)
-            .update({'profileImage': imageUrl});
+      try {
+        String imageUrl = await _uploadImageToFirebase();
+        final getUserData = await FirebaseFirestore.instance
+            .collection('user')
+            .where("uid", isEqualTo: user.uid)
+            .get();
+
+        if (getUserData.docs.isNotEmpty) {
+          final userDoc = getUserData.docs.first;
+          print("Updating Firestore document: ${userDoc.id}");
+          await FirebaseFirestore.instance
+              .collection('user')
+              .doc(userDoc.id)
+              .update({'profileImage': imageUrl});
+          print("Firestore updated successfully with imageUrl: $imageUrl");
+
+          // Update the local state
+          setState(() {
+            _profileImageUrl = imageUrl;
+          });
+        } else {
+          print("No user document found for UID: ${user.uid}");
+        }
+      } catch (e) {
+        print("Error updating profile image: $e");
       }
     }
     setState(() => isEdited = false);
@@ -89,8 +160,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     radius: 50,
                     backgroundImage: _selectedImage != null
                         ? FileImage(_selectedImage!)
-                        : const NetworkImage(
-                            "https://www.w3schools.com/howto/img_avatar.png"),
+                        : (_profileImageUrl != null
+                            ? NetworkImage(_profileImageUrl!)
+                            : const NetworkImage(
+                                "https://www.w3schools.com/howto/img_avatar.png")),
                   ),
                   SizedBox(height: 10),
                   GestureDetector(
@@ -152,7 +225,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(""),
+                      Text(_username ?? ""),
                     ],
                   ),
                 ],

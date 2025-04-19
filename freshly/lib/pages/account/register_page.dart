@@ -17,8 +17,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
 
   Future<void> _createUser(context) async {
+    final username = _usernameController.text.trim();
     final email = _emailController.text.trim().toLowerCase();
     final password = _passwordController.text;
 
@@ -29,6 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
         {
           "uid": user.user!.uid,
           "email": email,
+          "username": username,
           "profileImage": "",
         },
       ).then(
@@ -50,6 +53,14 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       return;
     }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _usernameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -101,6 +112,38 @@ class _RegisterPageState extends State<RegisterPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
+                          "Username :",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _usernameController,
+                          validator: RequiredValidator(
+                            errorText: "Please enter your Username",
+                          ).call,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: HexColor("#EEF1DA"),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 8.0,
+                              horizontal: 16.0,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: HexColor("#2C4340"),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
                           "Email :",
                           style: TextStyle(
                             fontSize: 16,
@@ -137,7 +180,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             color: HexColor("#2C4340"),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Text(
                           "Password :",
                           style: TextStyle(
@@ -189,7 +232,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             color: HexColor("#2C4340"),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                       ],
                     ),
                   ),

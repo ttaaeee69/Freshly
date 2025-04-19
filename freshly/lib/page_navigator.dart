@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -15,6 +16,44 @@ class PageNavigator extends StatefulWidget {
 
 class _PageNavigatorState extends State<PageNavigator> {
   int _selectedIndex = 0;
+  String? _profileImageUrl;
+  String? _username;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final querySnapshot = await FirebaseFirestore.instance
+            .collection(
+                'user') // Ensure this matches your Firestore collection name
+            .where("uid", isEqualTo: user.uid)
+            .get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          final userDoc = querySnapshot.docs.first;
+          setState(() {
+            if (userDoc['profileImage'] != null &&
+                userDoc['profileImage'].isNotEmpty) {
+              _profileImageUrl = userDoc['profileImage'];
+            } else {
+              _profileImageUrl = null;
+            }
+            _username = userDoc['username'];
+          });
+        } else {
+          print("No user document found for UID: ${user.uid}");
+        }
+      }
+    } catch (error) {
+      print("Error fetching user data: $error");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +66,27 @@ class _PageNavigatorState extends State<PageNavigator> {
             bottomRight: Radius.circular(20),
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.account_circle_rounded,
-            size: 60,
-            color: Colors.black,
-          ),
-          onPressed: () {},
-          padding: const EdgeInsets.only(left: 20),
+        leading: Stack(
+          clipBehavior: Clip.none, // Allow overflow
+          children: [
+            Positioned(
+              left: 21, // Adjust the position as needed
+              top: 21, // Adjust the vertical position if necessary
+              child: CircleAvatar(
+                radius: 30, // Adjust the size as needed
+                backgroundImage: _profileImageUrl != null
+                    ? NetworkImage(_profileImageUrl!)
+                    : null,
+                child: _profileImageUrl == null
+                    ? const Icon(
+                        Icons.account_circle_rounded,
+                        size: 60,
+                        color: Colors.black,
+                      )
+                    : null,
+              ),
+            ),
+          ],
         ),
         centerTitle: false,
         title: Padding(
@@ -44,9 +96,9 @@ class _PageNavigatorState extends State<PageNavigator> {
             spacing: 2.0,
             children: [
               if (_selectedIndex == 0)
-                const Text(
-                  "Hi Onnicha Intuwattakul!",
-                  style: TextStyle(
+                Text(
+                  _username != null ? "Hi $_username!" : "Hi Guest!",
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
