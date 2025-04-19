@@ -81,6 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (_selectedImage == null) {
       throw Exception("No image selected for upload.");
     }
+    print(_selectedImage!.path);
 
     try {
       final storageRef = FirebaseStorage.instance.ref();
@@ -217,6 +218,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   // Username Field
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "Username :",
@@ -225,15 +227,120 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(_username ?? ""),
+                      const SizedBox(height: 5),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        height: 40,
+                        width: double.infinity,
+                        padding: const EdgeInsets.only(left: 15.0),
+                        decoration: BoxDecoration(
+                          color: HexColor("#EEF1DA"),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _username ?? "",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.edit_rounded),
+                              iconSize: 18.0,
+                              color: HexColor('#2C4340'),
+                              onPressed: () {},
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Email Field
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Email :",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        height: 40,
+                        width: double.infinity,
+                        padding: const EdgeInsets.only(left: 15.0),
+                        decoration: BoxDecoration(
+                          color: HexColor("#EEF1DA"),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: Text(
+                          user.email ?? "",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Passowrd Field
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Password :",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        height: 40,
+                        width: double.infinity,
+                        padding: const EdgeInsets.only(left: 15.0),
+                        decoration: BoxDecoration(
+                          color: HexColor("#EEF1DA"),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: Text(
+                          "********",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
             Center(
-                child:
-                    ElevatedButton(onPressed: _logout, child: Text("Log out"))),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: HexColor("#ADB2D4"),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
+                onPressed: _logout,
+                child: Text(
+                  "Log out",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: HexColor('#2C4340')),
+                ),
+              ),
+            ),
           ],
         ),
       ),
