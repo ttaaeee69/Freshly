@@ -51,7 +51,7 @@ Freshly is a Flutter-based mobile application designed to help users efficiently
     - Create a `.env` file in the root of your project (next to `pubspec.yaml`).
     - Add your Spoonacular API key to the `.env` file:
         ```env
-        SPOONACULAR_API_KEY=your_spoonacular_api_key
+        SPOONACULAR_API_KEY = your_spoonacular_api_key
         ```
 
 5. Run the app:
@@ -89,9 +89,6 @@ Freshly is a Flutter-based mobile application designed to help users efficiently
 3. **Firebase Storage**:
 
     - Used for uploading and storing food images.
-
-4. **Firebase Cloud Messaging (Optional)**:
-    - Sends notifications for expiring items.
 
 ### Spoonacular API
 
@@ -134,9 +131,9 @@ lib/
 ### Onnicha Intuwattanakul
 
 -   **Student ID**: 6687108
--   **Email**: ❌
+-   **Email**: onnicha.int@student.mahidol.edu
 -   **GitHub**: [HOYEONNN](https://github.com/HOYEONNN)
 -   **University Email**: onnicha.int@student.mahidol.edu
--   **University GitHub**: ❌
+-   **University GitHub**: [cabbagearoi](https://github.com/cabbagearoi)
 
 ---
