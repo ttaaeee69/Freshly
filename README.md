@@ -90,9 +90,6 @@ Freshly is a Flutter-based mobile application designed to help users efficiently
 
     - Used for uploading and storing food images.
 
-4. **Firebase Cloud Messaging (Optional)**:
-    - Sends notifications for expiring items.
-
 ### Spoonacular API
 
 -   **Endpoint**: `https://api.spoonacular.com/recipes/complexSearch`
