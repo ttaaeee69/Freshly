@@ -135,213 +135,215 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          spacing: 20,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: HexColor("#E4C1C1"),
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    "Your profile",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: _selectedImage != null
-                        ? FileImage(_selectedImage!)
-                        : (_profileImageUrl != null
-                            ? NetworkImage(_profileImageUrl!)
-                            : const NetworkImage(
-                                "https://www.w3schools.com/howto/img_avatar.png")),
-                  ),
-                  SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: _pickImageFromGallery,
-                    child: Text(
-                      "Edit",
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Column(
+            spacing: 20,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: HexColor("#E4C1C1"),
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: Column(
+                  children: [
+                    const Text(
+                      "Your profile",
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                  if (isEdited)
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: HexColor("#ADB2D4"),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                      ),
-                      onPressed: _updateProfileImage,
+                    const SizedBox(height: 20),
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: _selectedImage != null
+                          ? FileImage(_selectedImage!)
+                          : (_profileImageUrl != null
+                              ? NetworkImage(_profileImageUrl!)
+                              : const NetworkImage(
+                                  "https://www.w3schools.com/howto/img_avatar.png")),
+                    ),
+                    SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: _pickImageFromGallery,
                       child: Text(
-                        "Save",
+                        "Edit",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                ],
+                    if (isEdited)
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: HexColor("#ADB2D4"),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        onPressed: _updateProfileImage,
+                        child: Text(
+                          "Save",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(20.0),
-              decoration: BoxDecoration(
-                color: HexColor("#97A78D"),
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 10,
-                children: [
-                  Text(
-                    "Details",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+              Container(
+                padding: const EdgeInsets.all(20.0),
+                decoration: BoxDecoration(
+                  color: HexColor("#97A78D"),
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 10,
+                  children: [
+                    Text(
+                      "Details",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
 
-                  // Username Field
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Username :",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                    // Username Field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Username :",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        height: 40,
-                        width: double.infinity,
-                        padding: const EdgeInsets.only(left: 15.0),
-                        decoration: BoxDecoration(
-                          color: HexColor("#EEF1DA"),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _username ?? "",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                        const SizedBox(height: 5),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          height: 40,
+                          width: double.infinity,
+                          padding: const EdgeInsets.only(left: 15.0),
+                          decoration: BoxDecoration(
+                            color: HexColor("#EEF1DA"),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _username ?? "",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.edit_rounded),
-                              iconSize: 18.0,
-                              color: HexColor('#2C4340'),
-                              onPressed: () {},
-                            ),
-                          ],
+                              IconButton(
+                                icon: Icon(Icons.edit_rounded),
+                                iconSize: 18.0,
+                                color: HexColor('#2C4340'),
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  // Email Field
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Email :",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        height: 40,
-                        width: double.infinity,
-                        padding: const EdgeInsets.only(left: 15.0),
-                        decoration: BoxDecoration(
-                          color: HexColor("#EEF1DA"),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Text(
-                          user.email ?? "",
+                      ],
+                    ),
+                    // Email Field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Email :",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  // Passowrd Field
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Password :",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(height: 5),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          height: 40,
+                          width: double.infinity,
+                          padding: const EdgeInsets.only(left: 15.0),
+                          decoration: BoxDecoration(
+                            color: HexColor("#EEF1DA"),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: Text(
+                            user.email ?? "",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        height: 40,
-                        width: double.infinity,
-                        padding: const EdgeInsets.only(left: 15.0),
-                        decoration: BoxDecoration(
-                          color: HexColor("#EEF1DA"),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Text(
-                          "********",
+                      ],
+                    ),
+                    // Passowrd Field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Password :",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(height: 5),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          height: 40,
+                          width: double.infinity,
+                          padding: const EdgeInsets.only(left: 15.0),
+                          decoration: BoxDecoration(
+                            color: HexColor("#EEF1DA"),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: Text(
+                            "********",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: HexColor("#ADB2D4"),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
+              Center(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: HexColor("#ADB2D4"),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  onPressed: _logout,
+                  child: Text(
+                    "Log out",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: HexColor('#2C4340')),
                   ),
                 ),
-                onPressed: _logout,
-                child: Text(
-                  "Log out",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: HexColor('#2C4340')),
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
