@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'recipe_detail_page.dart';
 
 class MenuPage extends StatefulWidget {
@@ -12,8 +13,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  final String apiKey =
-      "54b2b8be87124363836179e73a645e7d"; // Replace with your API key
+  final String apiKey = dotenv.env['SPOONACULAR_API_KEY'] ?? '';
   Dio dio = Dio();
   final TextEditingController _searchController = TextEditingController();
   bool isLoading = false;
@@ -24,8 +24,22 @@ class _MenuPageState extends State<MenuPage> {
   @override
   void initState() {
     super.initState();
-    determineMealType(); // Determine the meal type based on the time of day
-    fetchRecipes(""); // Fetch random recipes for the determined meal type
+    if (apiKey.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "API key is missing. Please add it to the .env file.",
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      });
+    } else {
+      determineMealType(); // Determine the meal type based on the time of day
+      fetchRecipes("");
+    }
   }
 
   void determineMealType() {
@@ -40,6 +54,8 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Future<void> fetchRecipes(String query) async {
+    if (apiKey.isEmpty) return; // Prevent API calls if the key is missing
+
     setState(() {
       isLoading = true;
     });
@@ -77,6 +93,9 @@ class _MenuPageState extends State<MenuPage> {
         });
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       print("Error fetching data: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Failed to fetch recipes")),
