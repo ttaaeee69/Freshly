@@ -31,5 +31,6 @@ class Food {
   }
 
   @override
-  String toString() => "Ingredient(name: $name, startDate: $startDate)";
+  String toString() =>
+      "Ingredient(name: $name, startDate: $startDate, expDate: $expDate)";
 }
