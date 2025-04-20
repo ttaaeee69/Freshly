@@ -7,6 +7,7 @@ import 'package:hexcolor/hexcolor.dart';
 import '../../models/food.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class FridgePage extends StatefulWidget {
   const FridgePage({super.key});
@@ -132,30 +133,29 @@ class _FridgePageState extends State<FridgePage> {
                           ),
                           Row(
                             children: [
-                              IngredientDropdown(),
-                              IconButton(
-                                icon: Container(
-                                  decoration: BoxDecoration(
-                                    color: HexColor("#EEF1DA"),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Icon(
-                                      Icons.edit_rounded,
-                                      size: 20,
-                                      color: HexColor("#97A78D"),
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {},
-                              ),
+                              // IngredientDropdown(),
+                              // IconButton(
+                              //   icon: Container(
+                              //     decoration: BoxDecoration(
+                              //       color: HexColor("#EEF1DA"),
+                              //       shape: BoxShape.circle,
+                              //     ),
+                              //     child: Padding(
+                              //       padding: const EdgeInsets.all(4.0),
+                              //       child: Icon(
+                              //         Icons.edit_rounded,
+                              //         size: 20,
+                              //         color: HexColor("#97A78D"),
+                              //       ),
+                              //     ),
+                              //   ),
+                              //   onPressed: () {},
+                              // ),
                             ],
                           ),
                         ],
                       ),
                       const SizedBox(height: 10),
-                      // Don't use Expanded here since the container has no fixed height
                       _ingredients.isEmpty
                           ? const Center(
                               child: Text(""),
@@ -170,41 +170,52 @@ class _FridgePageState extends State<FridgePage> {
 
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 10),
-                                  child: Dismissible(
-                                    key: Key(ingredient.name),
-                                    direction: DismissDirection.startToEnd,
-                                    onDismissed: (direction) {
-                                      _deleteFood(ingredient.fid!);
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            "${ingredient.name} deleted",
-                                          ),
+                                  child: Slidable(
+                                    key: Key(ingredient.fid!),
+                                    startActionPane: ActionPane(
+                                      motion: const BehindMotion(),
+                                      extentRatio: 0.2,
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            _deleteFood(ingredient.fid!)
+                                                .then((_) => _refreshFood());
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                    "${ingredient.name} deleted"),
+                                              ),
+                                            );
+                                          },
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          backgroundColor: Colors.red,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.delete,
                                         ),
-                                      );
-                                    },
-                                    background: ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Container(
-                                        alignment: Alignment.centerLeft,
-                                        padding:
-                                            const EdgeInsets.only(left: 20),
-                                        color: Colors.red,
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.delete,
-                                                color: Colors.white),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              "Delete",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
+                                      ],
+                                    ),
+                                    endActionPane: ActionPane(
+                                      motion: const BehindMotion(),
+                                      extentRatio: 0.2,
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  EditFoodDialog(
+                                                      food: ingredient),
+                                            ).then((_) => _refreshFood());
+                                          },
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          backgroundColor: Colors.blue,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.edit,
                                         ),
-                                      ),
+                                      ],
                                     ),
                                     child: Container(
                                       decoration: BoxDecoration(
@@ -288,24 +299,24 @@ class _FridgePageState extends State<FridgePage> {
                           ),
                           Row(
                             children: [
-                              IngredientDropdown(),
-                              IconButton(
-                                icon: Container(
-                                  decoration: BoxDecoration(
-                                    color: HexColor("#EEF1DA"),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Icon(
-                                      Icons.edit_rounded,
-                                      size: 20,
-                                      color: HexColor("#97A78D"),
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {},
-                              ),
+                              // IngredientDropdown(),
+                              // IconButton(
+                              //   icon: Container(
+                              //     decoration: BoxDecoration(
+                              //       color: HexColor("#EEF1DA"),
+                              //       shape: BoxShape.circle,
+                              //     ),
+                              //     child: Padding(
+                              //       padding: const EdgeInsets.all(4.0),
+                              //       child: Icon(
+                              //         Icons.edit_rounded,
+                              //         size: 20,
+                              //         color: HexColor("#97A78D"),
+                              //       ),
+                              //     ),
+                              //   ),
+                              //   onPressed: () {},
+                              // ),
                             ],
                           ),
                         ],
@@ -325,46 +336,53 @@ class _FridgePageState extends State<FridgePage> {
 
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 10),
-                                  child: Dismissible(
-                                    key: Key(cooked.name),
-                                    direction: DismissDirection.startToEnd,
-                                    onDismissed: (direction) {
-                                      _deleteFood(cooked.fid!);
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            "${cooked.name} deleted",
-                                          ),
+                                  child: Slidable(
+                                    key: Key(cooked.fid!),
+                                    endActionPane: ActionPane(
+                                      motion: const BehindMotion(),
+                                      extentRatio: 0.2,
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  EditFoodDialog(food: cooked),
+                                            ).then((_) => _refreshFood());
+                                          },
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          backgroundColor: Colors.blue,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.edit,
                                         ),
-                                      );
-                                    },
-                                    background: ClipRRect(
-                                      borderRadius: BorderRadius.circular(
-                                          20), // Apply border radius
-                                      child: Container(
-                                        alignment: Alignment.centerLeft,
-                                        padding:
-                                            const EdgeInsets.only(left: 20),
-                                        color: Colors.red,
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.delete,
-                                                color: Colors.white),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              "Delete",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
+                                      ],
+                                    ),
+                                    startActionPane: ActionPane(
+                                      motion: const BehindMotion(),
+                                      extentRatio: 0.2,
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            _deleteFood(cooked.fid!)
+                                                .then((_) => _refreshFood());
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                    "${cooked.name} deleted"),
                                               ),
-                                            ),
-                                          ],
+                                            );
+                                          },
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          backgroundColor: Colors.red,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.delete,
                                         ),
-                                      ),
+                                      ],
                                     ),
                                     child: Container(
-                                      margin: const EdgeInsets.only(bottom: 10),
                                       decoration: BoxDecoration(
                                         color: isExpired == "expired"
                                             ? HexColor("#D6805B")
@@ -373,9 +391,8 @@ class _FridgePageState extends State<FridgePage> {
                                       ),
                                       child: ListTile(
                                         leading: CircleAvatar(
-                                          child: Text(
-                                            cooked.name.substring(0, 1),
-                                          ),
+                                          child:
+                                              Text(cooked.name.substring(0, 1)),
                                         ),
                                         title: Text(
                                           cooked.name,
@@ -384,9 +401,8 @@ class _FridgePageState extends State<FridgePage> {
                                             color: HexColor("#2C4340"),
                                           ),
                                         ),
-                                        subtitle: Text(
-                                          "since ${cooked.startDate}",
-                                        ),
+                                        subtitle:
+                                            Text("since ${cooked.startDate}"),
                                         trailing: Text(cooked.isExpired!),
                                       ),
                                     ),
@@ -430,57 +446,193 @@ class _FridgePageState extends State<FridgePage> {
   }
 }
 
-const List<String> _ingredientFilter = [
-  "earliest exp date",
-  "lastest purchase",
-  "oldest purchase"
-];
+class EditFoodDialog extends StatefulWidget {
+  final Food food;
 
-class IngredientDropdown extends StatefulWidget {
-  const IngredientDropdown({super.key});
+  const EditFoodDialog({super.key, required this.food});
 
   @override
-  State<IngredientDropdown> createState() => _IngredientDropdownState();
+  State<EditFoodDialog> createState() => _EditFoodDialogState();
 }
 
-class _IngredientDropdownState extends State<IngredientDropdown> {
-  String dropdownValue = _ingredientFilter.first;
+class _EditFoodDialogState extends State<EditFoodDialog> {
+  late TextEditingController _nameController;
+  late DateTime _startDate;
+  DateTime? _expDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.food.name);
+    _startDate = DateFormat('dd/MM/yyyy').parse(widget.food.startDate);
+    if (widget.food.isExpired != null && widget.food.isExpired!.isNotEmpty) {
+      _expDate = _startDate.add(const Duration(days: 7)); // Default expiration
+    }
+  }
+
+  Future<void> _updateFood() async {
+    await FirebaseFirestore.instance
+        .collection('food')
+        .doc(widget.food.fid)
+        .update({
+      'name': _nameController.text,
+      'startDate': Timestamp.fromDate(_startDate),
+      'expDate': _expDate != null ? Timestamp.fromDate(_expDate!) : null,
+    });
+    Navigator.of(context).pop();
+  }
+
+  Future<void> _pickDate(bool isStartDate) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: isStartDate ? _startDate : _expDate ?? _startDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      setState(() {
+        if (isStartDate) {
+          _startDate = picked;
+          if (_expDate != null && _expDate!.isBefore(picked)) {
+            _expDate = null;
+          }
+        } else {
+          _expDate = picked;
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: HexColor("#EEF1DA"),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: DropdownButton<String>(
-        value: dropdownValue,
-        icon: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Icon(Icons.filter_list),
-        ),
-        elevation: 16,
-        isDense: true,
-        borderRadius: BorderRadius.circular(20),
-        dropdownColor: HexColor("#EEF1DA"),
-        onChanged: (String? value) {
-          setState(() => dropdownValue = value!);
-        },
-        items: _ingredientFilter.map<DropdownMenuItem<String>>(
-          (String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(
-                value,
-                style: TextStyle(
-                  fontSize: 14,
+    return AlertDialog(
+      title: Text('Edit ${widget.food.name}',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          )),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Item Name',
+                border: OutlineInputBorder(),
+                labelStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            );
-          },
-        ).toList(),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              title: Text(
+                  'Start Date: ${DateFormat('dd/MM/yyyy').format(_startDate)}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: HexColor("#2C4340"),
+                  )),
+              trailing: IconButton(
+                icon: const Icon(Icons.calendar_today),
+                onPressed: () => _pickDate(true),
+              ),
+            ),
+            ListTile(
+              title: Text(
+                  _expDate == null
+                      ? 'Expiration Date: Not set'
+                      : 'Expiration Date: ${DateFormat('dd/MM/yyyy').format(_expDate!)}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: HexColor("#2C4340"),
+                  )),
+              trailing: IconButton(
+                icon: const Icon(Icons.calendar_today),
+                onPressed: () => _pickDate(false),
+              ),
+            ),
+          ],
+        ),
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              )),
+        ),
+        ElevatedButton(
+          onPressed: _updateFood,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: HexColor("#ADB2D4"),
+          ),
+          child: Text('Save Changes',
+              style: TextStyle(
+                color: HexColor("#2C4340"),
+                fontWeight: FontWeight.bold,
+              )),
+        ),
+      ],
     );
   }
 }
+
+// const List<String> _ingredientFilter = [
+//   "earliest exp date",
+//   "lastest purchase",
+//   "oldest purchase"
+// ];
+
+// class IngredientDropdown extends StatefulWidget {
+//   const IngredientDropdown({super.key});
+
+//   @override
+//   State<IngredientDropdown> createState() => _IngredientDropdownState();
+// }
+
+// class _IngredientDropdownState extends State<IngredientDropdown> {
+//   String dropdownValue = _ingredientFilter.first;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       decoration: BoxDecoration(
+//         color: HexColor("#EEF1DA"),
+//         borderRadius: BorderRadius.circular(20),
+//       ),
+//       padding: const EdgeInsets.symmetric(horizontal: 8.0),
+//       child: DropdownButton<String>(
+//         value: dropdownValue,
+//         icon: Padding(
+//           padding: const EdgeInsets.only(left: 8.0),
+//           child: Icon(Icons.filter_list),
+//         ),
+//         elevation: 16,
+//         isDense: true,
+//         borderRadius: BorderRadius.circular(20),
+//         dropdownColor: HexColor("#EEF1DA"),
+//         onChanged: (String? value) {
+//           setState(() => dropdownValue = value!);
+//         },
+//         items: _ingredientFilter.map<DropdownMenuItem<String>>(
+//           (String value) {
+//             return DropdownMenuItem<String>(
+//               value: value,
+//               child: Text(
+//                 value,
+//                 style: TextStyle(
+//                   fontSize: 14,
+//                 ),
+//               ),
+//             );
+//           },
+//         ).toList(),
+//       ),
+//     );
+//   }
+// }
