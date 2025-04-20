@@ -145,13 +145,6 @@ class _PageNavigatorState extends State<PageNavigator> {
             ],
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.circle_notifications_rounded, size: 40),
-            onPressed: () {},
-            padding: const EdgeInsets.only(right: 20),
-          ),
-        ],
       ),
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.only(

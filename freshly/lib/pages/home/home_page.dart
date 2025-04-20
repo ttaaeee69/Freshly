@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     children: [
                       Text(
-                        "Don't forget this food without expiration date",
+                        "Don't forget these food without expiration date",
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -112,16 +112,22 @@ class _HomePageState extends State<HomePage> {
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: foodDocs.length,
                             itemBuilder: (context, index) {
-                              final data = foodDocs[index];
+                              final data = foodDocs[index].data() as Map<String,
+                                  dynamic>; // Explicitly cast to Map<String, dynamic>
                               Timestamp startDate = data["startDate"];
                               DateTime star = startDate.toDate();
+                              String? imageUrl = data.containsKey("imageUrl")
+                                  ? data["imageUrl"]
+                                  : null; // Check if imageUrl exists
                               String formatDate =
                                   DateFormat('dd/MM/yyyy').format(star);
+
                               final food = Food(
                                 uid: user.uid,
-                                fid: data.id,
+                                fid: foodDocs[index].id,
                                 name: data["name"],
                                 startDate: formatDate,
+                                imageUrl: imageUrl,
                               );
 
                               return Container(
@@ -137,9 +143,24 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                         child: ListTile(
                                           leading: CircleAvatar(
-                                            child: Text(
-                                              food.name.substring(0, 1),
-                                            ),
+                                            backgroundImage: food.imageUrl !=
+                                                    null
+                                                ? NetworkImage(food
+                                                    .imageUrl!) // Use the image if available
+                                                : null, // Fallback to no image
+                                            child: food.imageUrl == null
+                                                ? Text(
+                                                    food.name.substring(0,
+                                                        1), // Show the first letter if no image
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                  )
+                                                : null, // No child if the image is available
+                                            backgroundColor: HexColor(
+                                                "#97A78D"), // Background color for the text
                                           ),
                                           title: Text(
                                             food.name,

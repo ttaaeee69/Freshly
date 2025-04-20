@@ -9,14 +9,16 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 import 'camera.dart';
 
-class AddIngredientPage extends StatefulWidget {
-  const AddIngredientPage({super.key});
+class AddFoodPage extends StatefulWidget {
+  final String foodType; // "ingredient" or "cooked"
+
+  const AddFoodPage({super.key, required this.foodType});
 
   @override
-  State<AddIngredientPage> createState() => _AddIngredientPageState();
+  State<AddFoodPage> createState() => _AddFoodPageState();
 }
 
-class _AddIngredientPageState extends State<AddIngredientPage> {
+class _AddFoodPageState extends State<AddFoodPage> {
   DateTime? startDate;
   DateTime? expirationDate;
   User user = FirebaseAuth.instance.currentUser!;
@@ -40,12 +42,12 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
     }
   }
 
-  Future<void> _addIngredient(context) async {
+  Future<void> _addFood(context) async {
     final name = _nameController.text.trim();
 
     if (name.isEmpty || startDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields')),
+        const SnackBar(content: Text('Please fill in all required fields')),
       );
       return;
     }
@@ -63,29 +65,28 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
       return;
     }
 
-    final ingredient = Food(
+    final food = Food(
       uid: user.uid,
       name: name,
       startDate: startDate.toString(),
       expDate: expirationDate?.toString(),
-      type: "ingredient",
+      type: widget.foodType, // Use the food type passed to the page
       imageUrl: imageUrl,
     );
 
-    // Save the ingredient to Firestore
+    // Save the food to Firestore
     try {
-      await FirebaseFirestore.instance
-          .collection("food")
-          .add(ingredient.toMap());
+      await FirebaseFirestore.instance.collection("food").add(food.toMap());
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add ingredient: $e')),
+        SnackBar(content: Text('Failed to add ${widget.foodType}: $e')),
       );
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Ingredient added successfully')),
+      SnackBar(
+          content: Text('${widget.foodType.capitalize()} added successfully')),
     );
 
     Navigator.pop(context);
@@ -110,7 +111,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
         ),
         centerTitle: false,
         title: Text(
-          "Adding food into your fridge",
+          "Adding ${widget.foodType.capitalize()} to your fridge",
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -139,7 +140,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "Add food's profile",
+                          "Add ${widget.foodType.capitalize()}'s profile",
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -357,7 +358,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                   backgroundColor: HexColor("#ADB2D4"),
                 ),
                 onPressed: () {
-                  _addIngredient(context);
+                  _addFood(context);
                 },
                 child: Text(
                   "Done",
@@ -373,5 +374,11 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
         ),
       ),
     );
+  }
+}
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }
