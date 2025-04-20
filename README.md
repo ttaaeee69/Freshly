@@ -134,9 +134,9 @@ lib/
 ### Onnicha Intuwattanakul
 
 -   **Student ID**: 6687108
--   **Email**: ❌
+-   **Email**: onnicha.int@student.mahidol.edu
 -   **GitHub**: [HOYEONNN](https://github.com/HOYEONNN)
 -   **University Email**: onnicha.int@student.mahidol.edu
--   **University GitHub**: ❌
+-   **University GitHub**: [cabbagearoi]https://github.com/cabbagearoi
 
 ---
