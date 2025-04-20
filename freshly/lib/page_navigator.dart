@@ -72,18 +72,25 @@ class _PageNavigatorState extends State<PageNavigator> {
             Positioned(
               left: 21, // Adjust the position as needed
               top: 21, // Adjust the vertical position if necessary
-              child: CircleAvatar(
-                radius: 30, // Adjust the size as needed
-                backgroundImage: _profileImageUrl != null
-                    ? NetworkImage(_profileImageUrl!)
-                    : null,
-                child: _profileImageUrl == null
-                    ? const Icon(
-                        Icons.account_circle_rounded,
-                        size: 60,
-                        color: Colors.black,
-                      )
-                    : null,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = 3; // Navigate to the ProfilePage
+                  });
+                },
+                child: CircleAvatar(
+                  radius: 30, // Adjust the size as needed
+                  backgroundImage: _profileImageUrl != null
+                      ? NetworkImage(_profileImageUrl!)
+                      : null,
+                  child: _profileImageUrl == null
+                      ? const Icon(
+                          Icons.account_circle_rounded,
+                          size: 60,
+                          color: Colors.black,
+                        )
+                      : null,
+                ),
               ),
             ),
           ],
