@@ -134,6 +134,6 @@ lib/
 -   **Email**: onnicha.int@student.mahidol.edu
 -   **GitHub**: [HOYEONNN](https://github.com/HOYEONNN)
 -   **University Email**: onnicha.int@student.mahidol.edu
--   **University GitHub**: [cabbagearoi]https://github.com/cabbagearoi
+-   **University GitHub**: [cabbagearoi](https://github.com/cabbagearoi)
 
 ---
