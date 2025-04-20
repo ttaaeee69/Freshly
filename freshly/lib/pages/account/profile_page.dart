@@ -249,10 +249,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.edit_rounded),
+                                icon: const Icon(Icons.edit_rounded),
                                 iconSize: 18.0,
                                 color: HexColor('#2C4340'),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  final newUsername = await showDialog<String>(
+                                    context: context,
+                                    builder: (context) => EditUsernameDialog(
+                                      currentUsername: _username ?? '',
+                                    ),
+                                  );
+
+                                  if (newUsername != null) {
+                                    setState(() {
+                                      _username = newUsername;
+                                    });
+                                  }
+                                },
                               ),
                             ],
                           ),
@@ -290,6 +303,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
+
                     // Passowrd Field
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,6 +360,93 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class EditUsernameDialog extends StatefulWidget {
+  final String currentUsername;
+
+  const EditUsernameDialog({super.key, required this.currentUsername});
+
+  @override
+  State<EditUsernameDialog> createState() => _EditUsernameDialogState();
+}
+
+class _EditUsernameDialogState extends State<EditUsernameDialog> {
+  late TextEditingController _usernameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameController = TextEditingController(text: widget.currentUsername);
+  }
+
+  Future<void> _updateUsername() async {
+    if (_usernameController.text.isNotEmpty) {
+      try {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('user')
+            .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+            .get();
+
+        if (userDoc.docs.isNotEmpty) {
+          await FirebaseFirestore.instance
+              .collection('user')
+              .doc(userDoc.docs.first.id)
+              .update({'username': _usernameController.text});
+
+          // Update local state
+          if (mounted) {
+            Navigator.of(context).pop(_usernameController.text);
+          }
+        }
+      } catch (e) {
+        print("Error updating username: $e");
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit Username',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          )),
+      content: TextField(
+        controller: _usernameController,
+        decoration: const InputDecoration(
+          labelText: 'Username',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cancel',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.red,
+              )),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: HexColor("#ADB2D4"),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+          ),
+          onPressed: _updateUsername,
+          child: Text('Save',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: HexColor('#2C4340'),
+              )),
+        ),
+      ],
     );
   }
 }

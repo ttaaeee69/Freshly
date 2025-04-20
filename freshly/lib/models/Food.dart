@@ -8,29 +8,33 @@ class Food {
   final String? expDate;
   final String? isExpired;
   final String? type;
+  final String? imageUrl;
 
-  Food(
-      {required this.uid,
-      this.fid,
-      required this.name,
-      required this.startDate,
-      this.expDate,
-      this.isExpired,
-      this.type});
+  Food({
+    required this.uid,
+    this.fid,
+    required this.name,
+    required this.startDate,
+    this.expDate,
+    this.isExpired,
+    this.type,
+    this.imageUrl,
+  });
 
   Map<String, dynamic> toMap() {
+    bool expResult = expDate == null;
     return {
       "uid": uid,
       "name": name,
       "startDate": Timestamp.fromDate(DateTime.parse(startDate)),
-      "expDate": expDate != "null"
-          ? Timestamp.fromDate(DateTime.parse(expDate!))
-          : null,
+      "expDate":
+          expResult ? null : Timestamp.fromDate(DateTime.parse(expDate!)),
       "type": type,
+      "imageUrl": imageUrl,
     };
   }
 
   @override
   String toString() =>
-      "Ingredient(name: $name, startDate: $startDate, expDate: $expDate)";
+      "Ingredient(name: $name, startDate: $startDate, expDate: $expDate, isExpired: $isExpired, type: $type, imageUrl: $imageUrl)";
 }

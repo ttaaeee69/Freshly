@@ -1,9 +1,13 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:freshly/models/food.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
+import 'camera.dart';
 
 class AddIngredientPage extends StatefulWidget {
   const AddIngredientPage({super.key});
@@ -16,30 +20,73 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
   DateTime? startDate;
   DateTime? expirationDate;
   User user = FirebaseAuth.instance.currentUser!;
+  File? selectedImage; // To store the selected image file
 
   final TextEditingController _nameController = TextEditingController();
+
+  Future<String> _uploadImageToFirebase(File image) async {
+    try {
+      // Generate a unique file name
+      String fileName = 'images/${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      // Upload the image to Firebase Storage
+      final ref = FirebaseStorage.instance.ref().child(fileName);
+      await ref.putFile(image);
+
+      // Get the download URL
+      return await ref.getDownloadURL();
+    } catch (e) {
+      throw Exception('Failed to upload image: $e');
+    }
+  }
 
   Future<void> _addIngredient(context) async {
     final name = _nameController.text.trim();
 
-    if (name.isEmpty || startDate.toString().isEmpty) {
+    if (name.isEmpty || startDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields')),
       );
+      return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Ingredient added successfully')),
-    );
+    String? imageUrl;
+    try {
+      if (selectedImage != null) {
+        // Upload the image to Firebase Storage and get the URL
+        imageUrl = await _uploadImageToFirebase(selectedImage!);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload image: $e')),
+      );
+      return;
+    }
 
     final ingredient = Food(
       uid: user.uid,
       name: name,
       startDate: startDate.toString(),
-      expDate: expirationDate.toString(),
+      expDate: expirationDate?.toString(),
       type: "ingredient",
+      imageUrl: imageUrl,
     );
-    await FirebaseFirestore.instance.collection("food").add(ingredient.toMap());
+
+    // Save the ingredient to Firestore
+    try {
+      await FirebaseFirestore.instance
+          .collection("food")
+          .add(ingredient.toMap());
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add ingredient: $e')),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Ingredient added successfully')),
+    );
 
     Navigator.pop(context);
   }
@@ -87,21 +134,38 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 20,
                     children: [
-                      Text(
-                        "Add food's profile",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Add food's profile",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      Row(
+                      Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         spacing: 10,
                         children: [
+                          // Display the selected image in a 1:1 ratio
+                          if (selectedImage != null)
+                            Container(
+                              width: 200,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: FileImage(selectedImage!),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
                           IconButton(
                             icon: Container(
                               padding: const EdgeInsets.all(20.0),
@@ -110,32 +174,25 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
-                                Icons.add_photo_alternate_outlined,
+                                Icons.camera_alt,
                                 size: 30,
                               ),
                             ),
-                            onPressed: () {},
-                          ),
-                          Text(
-                            "or",
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          IconButton(
-                            icon: Container(
-                              padding: const EdgeInsets.all(20.0),
-                              decoration: BoxDecoration(
-                                color: HexColor("#DEDEDE"),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.add_reaction_outlined,
-                                size: 30,
-                              ),
-                            ),
-                            onPressed: () {},
+                            onPressed: () async {
+                              // Navigate to the CameraUI page and wait for the result
+                              final File? image = await Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (context) => const CameraUI(),
+                                ),
+                              );
+                              if (image != null) {
+                                setState(() {
+                                  selectedImage =
+                                      image; // Update the selected image
+                                });
+                              }
+                            },
                           ),
                         ],
                       ),
@@ -184,7 +241,8 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                               horizontal: 16.0,
                             ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
                               borderSide: BorderSide.none,
                             ),
                           ),

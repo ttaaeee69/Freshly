@@ -32,6 +32,8 @@
 	<string>We need access to your photo library to upload your profile picture.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera to take a profile picture.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>your usage description here</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We need access to save photos to your library.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

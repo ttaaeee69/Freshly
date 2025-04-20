@@ -551,6 +551,7 @@ class _EditFoodDialogState extends State<EditFoodDialog> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: HexColor("#2C4340"),
+                    fontSize: 14,
                   )),
               trailing: IconButton(
                 icon: const Icon(Icons.calendar_today),
@@ -565,6 +566,7 @@ class _EditFoodDialogState extends State<EditFoodDialog> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: HexColor("#2C4340"),
+                    fontSize: 14,
                   )),
               trailing: IconButton(
                 icon: const Icon(Icons.calendar_today),
@@ -580,6 +582,7 @@ class _EditFoodDialogState extends State<EditFoodDialog> {
           child: const Text('Cancel',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
+                color: Colors.red,
               )),
         ),
         ElevatedButton(
