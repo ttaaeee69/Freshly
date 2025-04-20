@@ -13,18 +13,21 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  final String apiKey = dotenv.env['SPOONACULAR_API_KEY'] ?? '';
-  Dio dio = Dio();
-  final TextEditingController _searchController = TextEditingController();
-  bool isLoading = false;
+  final String apiKey =
+      dotenv.env['SPOONACULAR_API_KEY'] ?? ''; // API key from .env file
+  Dio dio = Dio(); // HTTP client for API requests
+  final TextEditingController _searchController =
+      TextEditingController(); // Controller for search input
+  bool isLoading = false; // Tracks loading state
 
-  List<dynamic> recipes = [];
+  List<dynamic> recipes = []; // List of fetched recipes
   String mealType = "breakfast"; // Default meal type
 
   @override
   void initState() {
     super.initState();
     if (apiKey.isEmpty) {
+      // Show a snackbar if the API key is missing
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -38,10 +41,11 @@ class _MenuPageState extends State<MenuPage> {
       });
     } else {
       determineMealType(); // Determine the meal type based on the time of day
-      fetchRecipes("");
+      fetchRecipes(""); // Fetch recipes without a specific query
     }
   }
 
+  // Determines the meal type based on the current time
   void determineMealType() {
     final hour = DateTime.now().hour;
     if (hour >= 5 && hour < 11) {
@@ -53,11 +57,12 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
+  // Fetches recipes from the Spoonacular API
   Future<void> fetchRecipes(String query) async {
     if (apiKey.isEmpty) return; // Prevent API calls if the key is missing
 
     setState(() {
-      isLoading = true;
+      isLoading = true; // Show loading indicator
     });
 
     try {
@@ -79,8 +84,8 @@ class _MenuPageState extends State<MenuPage> {
         }
 
         setState(() {
-          isLoading = false;
-          recipes = detailedRecipes;
+          isLoading = false; // Hide loading indicator
+          recipes = detailedRecipes; // Update recipes list
         });
       } else {
         // Fetch random recipes for the meal type
@@ -88,21 +93,23 @@ class _MenuPageState extends State<MenuPage> {
           "https://api.spoonacular.com/recipes/random?apiKey=$apiKey&number=10&tags=$mealType&maxReadyTime=15&minServings=1&maxServings=2",
         );
         setState(() {
-          isLoading = false;
-          recipes = response.data["recipes"];
+          isLoading = false; // Hide loading indicator
+          recipes = response.data["recipes"]; // Update recipes list
         });
       }
     } catch (e) {
       setState(() {
-        isLoading = false;
+        isLoading = false; // Hide loading indicator
       });
-      print("Error fetching data: $e");
+      print("Error fetching data: $e"); // Log error
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to fetch recipes")),
+        const SnackBar(
+            content: Text("Failed to fetch recipes")), // Show error message
       );
     }
   }
 
+  // Handles search functionality
   void searchMenu() {
     String searchText = _searchController.text.trim();
     fetchRecipes(searchText); // Fetch recipes based on the search text
@@ -114,6 +121,7 @@ class _MenuPageState extends State<MenuPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Search bar
           Padding(
             padding: const EdgeInsets.only(left: 30.0, right: 30.0, top: 20.0),
             child: TextField(
@@ -133,7 +141,7 @@ class _MenuPageState extends State<MenuPage> {
                   horizontal: 16.0,
                 ),
                 suffixIcon: IconButton(
-                  onPressed: searchMenu,
+                  onPressed: searchMenu, // Trigger search
                   icon: Icon(
                     Icons.search,
                     color: HexColor("#8F9E85"),
@@ -147,6 +155,7 @@ class _MenuPageState extends State<MenuPage> {
             ),
           ),
           const SizedBox(height: 20),
+          // Recommended recipes header
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: Text(
@@ -158,11 +167,15 @@ class _MenuPageState extends State<MenuPage> {
             ),
           ),
           const SizedBox(height: 10),
+          // Recipes list
           Expanded(
             child: isLoading
-                ? const Center(child: CupertinoActivityIndicator())
+                ? const Center(
+                    child:
+                        CupertinoActivityIndicator()) // Show loading indicator
                 : recipes.isEmpty
-                    ? const Center(child: Text("No recipes found"))
+                    ? const Center(
+                        child: Text("No recipes found")) // Show empty state
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 30.0),
                         itemCount: recipes.length,
@@ -195,6 +208,7 @@ class _MenuPageState extends State<MenuPage> {
 
                           return GestureDetector(
                             onTap: () {
+                              // Navigate to recipe detail page
                               Navigator.push(
                                   context,
                                   CupertinoPageRoute(
@@ -215,6 +229,7 @@ class _MenuPageState extends State<MenuPage> {
                                     top: 8.0),
                                 child: Column(
                                   children: [
+                                    // Recipe title
                                     Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
@@ -244,11 +259,12 @@ class _MenuPageState extends State<MenuPage> {
                                         ),
                                       ],
                                     ),
+                                    // Recipe details
                                     Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        // Recipe Image
+                                        // Recipe image
                                         ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(20),
@@ -277,13 +293,12 @@ class _MenuPageState extends State<MenuPage> {
                                         const SizedBox(
                                             width:
                                                 16), // Spacing between image and text
-                                        // Recipe Details
+                                        // Ingredients
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              // Ingredients
                                               Text(
                                                 "Ingredients:",
                                                 style: const TextStyle(

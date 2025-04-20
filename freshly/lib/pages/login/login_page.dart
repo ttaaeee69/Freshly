@@ -11,27 +11,35 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
-  bool _isObscure = true;
+  final _formKey = GlobalKey<FormState>(); // Form key for validation
+  bool _isObscure = true; // Controls password visibility
 
+  // Controllers for email and password fields
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Handles user login
   Future<void> _login(context) async {
-    final email = _emailController.text.trim().toLowerCase();
-    final password = _passwordController.text;
+    final email = _emailController.text.trim().toLowerCase(); // Get email input
+    final password = _passwordController.text; // Get password input
 
     try {
+      // Attempt to sign in with Firebase Authentication
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
+
+      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Login successful!"),
           backgroundColor: Colors.green,
         ),
       );
+
+      // Navigate back to the previous page
       Navigator.pop(context);
     } catch (e) {
+      // Show error message if login fails
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Login failed: ${e.toString()}"),
@@ -46,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 100,
+        toolbarHeight: 100, // Set AppBar height
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20),
@@ -54,31 +62,33 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
-          color: HexColor("#2C4340"),
-          onPressed: () => Navigator.pop(context),
-          padding: const EdgeInsets.only(left: 20),
+          icon: Icon(Icons.arrow_back_ios), // Back button icon
+          color: HexColor("#2C4340"), // Icon color
+          onPressed: () => Navigator.pop(context), // Navigate back
+          padding: const EdgeInsets.only(left: 20), // Adjust padding
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(left: 30.0, right: 30.0, top: 150.0),
           child: Column(
-            spacing: 30,
+            spacing: 30, // Spacing between elements
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Login form container
               Container(
                 padding: const EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
-                  color: HexColor("#97A78D"),
+                  color: HexColor("#97A78D"), // Background color
                   borderRadius: const BorderRadius.all(
                     Radius.circular(20),
                   ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  spacing: 10,
+                  spacing: 10, // Spacing between elements
                   children: [
+                    // Title
                     Text(
                       "Login",
                       style: TextStyle(
@@ -86,11 +96,13 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    // Form
                     Form(
-                      key: _formKey,
+                      key: _formKey, // Assign form key
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Email field
                           Text(
                             "Email :",
                             style: TextStyle(
@@ -128,7 +140,9 @@ class _LoginPageState extends State<LoginPage> {
                               color: HexColor("#2C4340"),
                             ),
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
+
+                          // Password field
                           Text(
                             "Password :",
                             style: TextStyle(
@@ -139,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                           const SizedBox(height: 6),
                           TextFormField(
                             controller: _passwordController,
-                            obscureText: _isObscure,
+                            obscureText: _isObscure, // Hide password text
                             validator: RequiredValidator(
                                     errorText: "Please enter your Password")
                                 .call,
@@ -165,7 +179,8 @@ class _LoginPageState extends State<LoginPage> {
                                 onPressed: () {
                                   setState(
                                     () {
-                                      _isObscure = !_isObscure;
+                                      _isObscure =
+                                          !_isObscure; // Toggle visibility
                                     },
                                   );
                                 },
@@ -176,21 +191,25 @@ class _LoginPageState extends State<LoginPage> {
                               color: HexColor("#2C4340"),
                             ),
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
+
+              // Submit button
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: HexColor("#ADB2D4"),
+                  backgroundColor: HexColor("#ADB2D4"), // Button color
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
+                    // Validate form and log in
                     _login(context);
                   } else {
+                    // Show error message if validation fails
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text("Please fill in all fields correctly."),

@@ -15,19 +15,20 @@ class PageNavigator extends StatefulWidget {
 }
 
 class _PageNavigatorState extends State<PageNavigator> {
-  int _selectedIndex = 0;
-  String? _profileImageUrl;
-  String? _username;
+  int _selectedIndex = 0; // Tracks the selected navigation index
+  String? _profileImageUrl; // Stores the user's profile image URL
+  String? _username; // Stores the user's username
 
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    _fetchUserData(); // Fetch user data when the widget is initialized
   }
 
+  // Fetches user data from Firebase Firestore
   Future<void> _fetchUserData() async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
+      final user = FirebaseAuth.instance.currentUser; // Get the current user
       if (user != null) {
         final querySnapshot = await FirebaseFirestore.instance
             .collection(
@@ -38,12 +39,14 @@ class _PageNavigatorState extends State<PageNavigator> {
         if (querySnapshot.docs.isNotEmpty) {
           final userDoc = querySnapshot.docs.first;
           setState(() {
+            // Update profile image URL if available
             if (userDoc['profileImage'] != null &&
                 userDoc['profileImage'].isNotEmpty) {
               _profileImageUrl = userDoc['profileImage'];
             } else {
               _profileImageUrl = null;
             }
+            // Update username
             _username = userDoc['username'];
           });
         } else {
@@ -59,7 +62,7 @@ class _PageNavigatorState extends State<PageNavigator> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 100,
+        toolbarHeight: 100, // Set AppBar height
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20),
@@ -67,11 +70,11 @@ class _PageNavigatorState extends State<PageNavigator> {
           ),
         ),
         leading: Stack(
-          clipBehavior: Clip.none, // Allow overflow
+          clipBehavior: Clip.none, // Allow overflow for the avatar
           children: [
             Positioned(
-              left: 21, // Adjust the position as needed
-              top: 21, // Adjust the vertical position if necessary
+              left: 21, // Adjust horizontal position
+              top: 21, // Adjust vertical position
               child: GestureDetector(
                 onTap: () {
                   setState(() {
@@ -79,7 +82,7 @@ class _PageNavigatorState extends State<PageNavigator> {
                   });
                 },
                 child: CircleAvatar(
-                  radius: 30, // Adjust the size as needed
+                  radius: 30, // Avatar size
                   backgroundImage: _profileImageUrl != null
                       ? NetworkImage(_profileImageUrl!)
                       : null,
@@ -100,8 +103,8 @@ class _PageNavigatorState extends State<PageNavigator> {
           padding: const EdgeInsets.only(left: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 2.0,
             children: [
+              // Display greeting based on the selected index
               if (_selectedIndex == 0)
                 Text(
                   _username != null ? "Hi $_username!" : "Hi Guest!",
@@ -152,15 +155,18 @@ class _PageNavigatorState extends State<PageNavigator> {
           topRight: Radius.circular(20),
         ),
         child: NavigationBar(
-          backgroundColor: HexColor("#ADB2D4"),
-          animationDuration: const Duration(milliseconds: 500),
+          backgroundColor:
+              HexColor("#ADB2D4"), // Navigation bar background color
+          animationDuration:
+              const Duration(milliseconds: 500), // Animation duration
           indicatorShape: CircleBorder(
             side: BorderSide(
-              color: HexColor("#E4C1C1"),
+              color: HexColor("#E4C1C1"), // Indicator border color
               width: 40,
             ),
           ),
           destinations: [
+            // Navigation destinations
             NavigationDestination(
               icon: Image.asset(
                 "assets/img/home_icon.PNG",
@@ -194,16 +200,16 @@ class _PageNavigatorState extends State<PageNavigator> {
               label: "Account",
             ),
           ],
-          selectedIndex: _selectedIndex,
+          selectedIndex: _selectedIndex, // Current selected index
           onDestinationSelected: (int index) {
             setState(() {
-              _selectedIndex = index;
+              _selectedIndex = index; // Update selected index
             });
           },
         ),
       ),
       body: IndexedStack(
-        index: _selectedIndex,
+        index: _selectedIndex, // Display the selected page
         children: const [
           HomePage(),
           FridgePage(),

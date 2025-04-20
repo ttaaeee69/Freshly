@@ -85,5 +85,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'freshly-e154b.firebasestorage.app',
     measurementId: 'G-KKMKZD1RMC',
   );
-
 }

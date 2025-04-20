@@ -15,95 +15,86 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  File? _selectedImage;
-  User user = FirebaseAuth.instance.currentUser!;
-  bool isEdited = false;
-  String? _profileImageUrl;
-  String? _username;
+  File? _selectedImage; // Selected image file
+  User user = FirebaseAuth.instance.currentUser!; // Current user
+  bool isEdited = false; // Tracks if the profile is being edited
+  String? _profileImageUrl; // URL of the profile image
+  String? _username; // Username of the user
 
   @override
   void initState() {
     super.initState();
-    _fetchProfileImage();
+    _fetchProfileImage(); // Fetch profile image and username on initialization
   }
 
+  // Fetches the profile image and username from Firestore
   Future<void> _fetchProfileImage() async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
-          .collection(
-              'user') // Ensure this matches your Firestore collection name
-          .where("uid", isEqualTo: user.uid)
+          .collection('user') // Firestore collection name
+          .where("uid", isEqualTo: user.uid) // Filter by user ID
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         final userDoc = querySnapshot.docs.first;
         String? imageUrl = userDoc['profileImage'];
-        String? username = userDoc[
-            'username']; // Assuming 'username' is the field name in Firestore
+        String? username = userDoc['username']; // Username field in Firestore
 
         setState(() {
           if (imageUrl != null && imageUrl.isNotEmpty) {
-            _profileImageUrl = imageUrl;
-          } else {
-            print("No profile image found for user.");
+            _profileImageUrl = imageUrl; // Set profile image URL
           }
 
           if (username != null && username.isNotEmpty) {
-            _username =
-                username; // Add a new state variable `_username` to store the username
-          } else {
-            print("No username found for user.");
+            _username = username; // Set username
           }
         });
-      } else {
-        print("No user document found for UID: ${user.uid}");
       }
     } catch (error) {
       print("Error fetching profile image and username: $error");
     }
   }
 
+  // Logs out the user
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
   }
 
+  // Picks an image from the gallery
   Future<void> _pickImageFromGallery() async {
     final picker = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picker != null) {
       setState(() {
-        _selectedImage = File(picker.path);
-        isEdited = true;
+        _selectedImage = File(picker.path); // Set the selected image
+        isEdited = true; // Mark profile as edited
       });
     }
   }
 
+  // Uploads the selected image to Firebase Storage
   Future<String> _uploadImageToFirebase() async {
     if (_selectedImage == null) {
       throw Exception("No image selected for upload.");
     }
-    print(_selectedImage!.path);
 
     try {
       final storageRef = FirebaseStorage.instance.ref();
       final fileName = DateTime.now().millisecondsSinceEpoch.toString();
       final imageRef = storageRef.child('profile_images/$fileName.jpg');
 
-      print("Uploading image: ${_selectedImage!.path}");
-      await imageRef.putFile(_selectedImage!);
+      await imageRef.putFile(_selectedImage!); // Upload the image
 
-      final downloadUrl = await imageRef.getDownloadURL();
-      print("Image uploaded successfully: $downloadUrl");
-      return downloadUrl;
+      return await imageRef.getDownloadURL(); // Get the download URL
     } catch (e) {
-      print("Error uploading image: $e");
       throw Exception("Failed to upload image: $e");
     }
   }
 
+  // Updates the profile image in Firestore
   Future<void> _updateProfileImage() async {
     if (_selectedImage != null) {
       try {
-        String imageUrl = await _uploadImageToFirebase();
+        String imageUrl = await _uploadImageToFirebase(); // Upload image
         final getUserData = await FirebaseFirestore.instance
             .collection('user')
             .where("uid", isEqualTo: user.uid)
@@ -111,25 +102,20 @@ class _ProfilePageState extends State<ProfilePage> {
 
         if (getUserData.docs.isNotEmpty) {
           final userDoc = getUserData.docs.first;
-          print("Updating Firestore document: ${userDoc.id}");
           await FirebaseFirestore.instance
               .collection('user')
               .doc(userDoc.id)
-              .update({'profileImage': imageUrl});
-          print("Firestore updated successfully with imageUrl: $imageUrl");
+              .update({'profileImage': imageUrl}); // Update Firestore
 
-          // Update the local state
           setState(() {
-            _profileImageUrl = imageUrl;
+            _profileImageUrl = imageUrl; // Update local state
           });
-        } else {
-          print("No user document found for UID: ${user.uid}");
         }
       } catch (e) {
         print("Error updating profile image: $e");
       }
     }
-    setState(() => isEdited = false);
+    setState(() => isEdited = false); // Reset edit state
   }
 
   @override
@@ -139,13 +125,14 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Padding(
           padding: const EdgeInsets.all(30.0),
           child: Column(
-            spacing: 20,
+            spacing: 20, // Spacing between elements
             children: [
+              // Profile container
               Container(
                 padding: const EdgeInsets.all(10),
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: HexColor("#E4C1C1"),
+                  color: HexColor("#E4C1C1"), // Background color
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 child: Column(
@@ -159,18 +146,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const SizedBox(height: 20),
                     CircleAvatar(
-                      radius: 50,
+                      radius: 50, // Avatar size
                       backgroundImage: _selectedImage != null
-                          ? FileImage(_selectedImage!)
+                          ? FileImage(_selectedImage!) // Display selected image
                           : (_profileImageUrl != null
-                              ? NetworkImage(_profileImageUrl!)
+                              ? NetworkImage(_profileImageUrl!) // Display profile image
                               : const NetworkImage(
-                                  "https://www.w3schools.com/howto/img_avatar.png")),
+                                  "https://www.w3schools.com/howto/img_avatar.png")), // Default avatar
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     GestureDetector(
-                      onTap: _pickImageFromGallery,
-                      child: Text(
+                      onTap: _pickImageFromGallery, // Pick image from gallery
+                      child: const Text(
                         "Edit",
                         style: TextStyle(
                           fontSize: 16,
@@ -181,13 +168,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     if (isEdited)
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: HexColor("#ADB2D4"),
+                          backgroundColor: HexColor("#ADB2D4"), // Button color
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.0),
                           ),
                         ),
-                        onPressed: _updateProfileImage,
-                        child: Text(
+                        onPressed: _updateProfileImage, // Save profile image
+                        child: const Text(
                           "Save",
                           style: TextStyle(
                             fontSize: 16,
@@ -198,30 +185,30 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
               ),
+              // Details container
               Container(
                 padding: const EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
-                  color: HexColor("#97A78D"),
+                  color: HexColor("#97A78D"), // Background color
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 width: double.infinity,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 10,
+                  spacing: 10, // Spacing between elements
                   children: [
-                    Text(
+                    const Text(
                       "Details",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                    // Username Field
+                    // Username field
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           "Username :",
                           style: TextStyle(
                             fontSize: 16,
@@ -235,15 +222,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: double.infinity,
                           padding: const EdgeInsets.only(left: 15.0),
                           decoration: BoxDecoration(
-                            color: HexColor("#EEF1DA"),
+                            color: HexColor("#EEF1DA"), // Field background color
                             borderRadius: BorderRadius.circular(20.0),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                _username ?? "",
-                                style: TextStyle(
+                                _username ?? "", // Display username
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -262,7 +249,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                                   if (newUsername != null) {
                                     setState(() {
-                                      _username = newUsername;
+                                      _username = newUsername; // Update username
                                     });
                                   }
                                 },
@@ -272,11 +259,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
-                    // Email Field
+                    // Email field
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           "Email :",
                           style: TextStyle(
                             fontSize: 16,
@@ -290,44 +277,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: double.infinity,
                           padding: const EdgeInsets.only(left: 15.0),
                           decoration: BoxDecoration(
-                            color: HexColor("#EEF1DA"),
+                            color: HexColor("#EEF1DA"), // Field background color
                             borderRadius: BorderRadius.circular(20.0),
                           ),
                           child: Text(
-                            user.email ?? "",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // Passowrd Field
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Password :",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          height: 40,
-                          width: double.infinity,
-                          padding: const EdgeInsets.only(left: 15.0),
-                          decoration: BoxDecoration(
-                            color: HexColor("#EEF1DA"),
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          child: Text(
-                            "********",
-                            style: TextStyle(
+                            user.email ?? "", // Display email
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -338,21 +293,22 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
               ),
+              // Logout button
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: HexColor("#ADB2D4"),
+                    backgroundColor: HexColor("#ADB2D4"), // Button color
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
-                  onPressed: _logout,
-                  child: Text(
+                  onPressed: _logout, // Log out the user
+                  child: const Text(
                     "Log out",
                     style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: HexColor('#2C4340')),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),

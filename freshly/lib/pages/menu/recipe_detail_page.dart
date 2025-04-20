@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class RecipeDetailPage extends StatelessWidget {
-  final dynamic recipe;
+  final dynamic recipe; // Recipe data passed to this page
 
   const RecipeDetailPage({super.key, this.recipe});
 
   @override
   Widget build(BuildContext context) {
-    final name = recipe["title"];
-    final ingredients = recipe["extendedIngredients"] ?? [];
-    final instructions = recipe["instructions"] ?? "No instructions available.";
+    // Extract recipe details
+    final name = recipe["title"]; // Recipe title
+    final ingredients = recipe["extendedIngredients"] ?? []; // Ingredients list
+    final instructions =
+        recipe["instructions"] ?? "No instructions available."; // Instructions
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 100,
+        toolbarHeight: 100, // Set AppBar height
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20),
@@ -22,24 +24,24 @@ class RecipeDetailPage extends StatelessWidget {
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
-          color: HexColor("#2C4340"),
-          onPressed: () => Navigator.pop(context),
-          padding: const EdgeInsets.only(left: 20),
+          icon: Icon(Icons.arrow_back_ios), // Back button icon
+          color: HexColor("#2C4340"), // Icon color
+          onPressed: () => Navigator.pop(context), // Navigate back
+          padding: const EdgeInsets.only(left: 20), // Adjust padding
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(30.0), // Page padding
         child: Card(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20), // Rounded corners
           ),
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20.0), // Card padding
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //Recipe Name
+                // Recipe Name
                 Text(
                   name,
                   style: const TextStyle(
@@ -48,7 +50,7 @@ class RecipeDetailPage extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 30), // Spacing
 
                 // Ingredients Section
                 Text(
@@ -58,24 +60,29 @@ class RecipeDetailPage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 10), // Spacing
                 ingredients.isEmpty
-                    ? const Text("No ingredients information available")
+                    ? const Text(
+                        "No ingredients information available") // Show message if no ingredients
                     : ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: ingredients.length,
+                        shrinkWrap: true, // Prevent infinite height
+                        physics:
+                            const NeverScrollableScrollPhysics(), // Disable scrolling
+                        itemCount: ingredients.length, // Number of ingredients
                         itemBuilder: (context, index) {
                           final ingredient = ingredients[index];
                           return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 2.0), // Spacing between items
                             child: Text(
-                              "-  ${ingredient["original"]}",
+                              "-  ${ingredient["original"]}", // Display ingredient
                               style: const TextStyle(fontSize: 16),
                             ),
                           );
                         },
                       ),
+
+                const SizedBox(height: 30), // Spacing
 
                 // Instructions Section
                 const Text(
@@ -85,22 +92,25 @@ class RecipeDetailPage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 10), // Spacing
                 if (instructions is String || instructions is List)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: (instructions is String
-                            ? (instructions).split('\n')
-                            : (instructions as List).cast<String>())
-                        .where((line) => line.trim().isNotEmpty)
+                            ? (instructions)
+                                .split('\n') // Split string into steps
+                            : (instructions as List)
+                                .cast<String>()) // Handle list of steps
+                        .where((line) =>
+                            line.trim().isNotEmpty) // Remove empty lines
                         .map((step) => Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 4.0),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 4.0), // Spacing between steps
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "-  ",
+                                    "-  ", // Bullet point
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.black87,
@@ -108,10 +118,10 @@ class RecipeDetailPage extends StatelessWidget {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      step.trim(),
+                                      step.trim(), // Display step
                                       style: const TextStyle(
                                         fontSize: 16,
-                                        height: 1.4,
+                                        height: 1.4, // Line height
                                       ),
                                     ),
                                   ),
@@ -121,7 +131,8 @@ class RecipeDetailPage extends StatelessWidget {
                         .toList(),
                   )
                 else
-                  const Text("No instructions available"),
+                  const Text(
+                      "No instructions available"), // Show message if no instructions
               ],
             ),
           ),

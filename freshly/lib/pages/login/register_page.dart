@@ -12,21 +12,26 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
-  bool _isObscure = true;
+  final _formKey = GlobalKey<FormState>(); // Form key for validation
+  bool _isObscure = true; // Controls password visibility
 
+  // Controllers for form fields
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
 
+  // Handles user registration
   Future<void> _createUser(context) async {
     final username = _usernameController.text.trim();
     final email = _emailController.text.trim().toLowerCase();
     final password = _passwordController.text;
 
     try {
+      // Create user with Firebase Authentication
       UserCredential user = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+
+      // Add user details to Firestore
       FirebaseFirestore.instance.collection("user").add(
         {
           "uid": user.user!.uid,
@@ -36,6 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
         },
       ).then(
         (value) {
+          // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Registration successful!"),
@@ -45,6 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
         },
       );
     } catch (e) {
+      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Registration failed: ${e.toString()}"),
@@ -57,6 +64,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
+    // Dispose controllers to free up resources
     _emailController.dispose();
     _passwordController.dispose();
     _usernameController.dispose();
@@ -67,7 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 100,
+        toolbarHeight: 100, // Set AppBar height
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20),
@@ -75,10 +83,10 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
-          color: HexColor("#2C4340"),
-          onPressed: () => Navigator.pop(context),
-          padding: const EdgeInsets.only(left: 20),
+          icon: Icon(Icons.arrow_back_ios), // Back button icon
+          color: HexColor("#2C4340"), // Icon color
+          onPressed: () => Navigator.pop(context), // Navigate back
+          padding: const EdgeInsets.only(left: 20), // Adjust padding
         ),
       ),
       body: SingleChildScrollView(
@@ -86,21 +94,23 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Padding(
             padding: const EdgeInsets.only(left: 30.0, right: 30.0, top: 150.0),
             child: Column(
-              spacing: 30,
+              spacing: 30, // Spacing between elements
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Registration form container
                 Container(
                   padding: const EdgeInsets.all(20.0),
                   decoration: BoxDecoration(
-                    color: HexColor("#97A78D"),
+                    color: HexColor("#97A78D"), // Background color
                     borderRadius: const BorderRadius.all(
                       Radius.circular(20),
                     ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    spacing: 10,
+                    spacing: 10, // Spacing between elements
                     children: [
+                      // Title
                       Text(
                         "Register",
                         style: TextStyle(
@@ -108,11 +118,13 @@ class _RegisterPageState extends State<RegisterPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      // Form
                       Form(
-                        key: _formKey,
+                        key: _formKey, // Assign form key
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Username field
                             Text(
                               "Username :",
                               style: TextStyle(
@@ -145,6 +157,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ),
                             const SizedBox(height: 10),
+
+                            // Email field
                             Text(
                               "Email :",
                               style: TextStyle(
@@ -183,6 +197,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ),
                             const SizedBox(height: 10),
+
+                            // Password field
                             Text(
                               "Password :",
                               style: TextStyle(
@@ -202,7 +218,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           "Password must be at least 6 characters long"),
                                 ],
                               ).call,
-                              obscureText: _isObscure,
+                              obscureText: _isObscure, // Hide password text
                               decoration: InputDecoration(
                                 filled: true,
                                 fillColor: HexColor("#EEF1DA"),
@@ -224,7 +240,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                   onPressed: () {
                                     setState(() {
-                                      _isObscure = !_isObscure;
+                                      _isObscure =
+                                          !_isObscure; // Toggle visibility
                                     });
                                   },
                                 ),
@@ -241,15 +258,19 @@ class _RegisterPageState extends State<RegisterPage> {
                     ],
                   ),
                 ),
+
+                // Submit button
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: HexColor("#ADB2D4"),
+                    backgroundColor: HexColor("#ADB2D4"), // Button color
                   ),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      // Validate form and create user
                       await _createUser(context);
-                      Navigator.pop(context);
+                      Navigator.pop(context); // Navigate back on success
                     } else {
+                      // Show error message if validation fails
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text("Please fill in all fields correctly."),

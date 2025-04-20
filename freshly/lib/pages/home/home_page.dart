@@ -14,13 +14,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  User user = FirebaseAuth.instance.currentUser!;
+  User user = FirebaseAuth.instance.currentUser!; // Get the current user
 
+  // Stream to fetch food data from Firestore
   Stream<QuerySnapshot> getFoodStream() {
     return FirebaseFirestore.instance
         .collection("food")
-        .where("uid", isEqualTo: user.uid)
-        .orderBy("startDate", descending: true)
+        .where("uid", isEqualTo: user.uid) // Filter by user ID
+        .orderBy("startDate", descending: true) // Order by start date
         .snapshots();
   }
 
@@ -31,21 +32,22 @@ class _HomePageState extends State<HomePage> {
         child: Padding(
           padding: const EdgeInsets.all(30.0),
           child: Column(
-            spacing: 30,
+            spacing: 30, // Spacing between elements
             children: [
+              // Calendar container
               Container(
                 height: 400,
                 decoration: BoxDecoration(
-                  color: HexColor("#E4C1C1"),
+                  color: HexColor("#E4C1C1"), // Background color
                   borderRadius: const BorderRadius.all(
                     Radius.circular(20),
                   ),
                 ),
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: getFoodStream(),
+                  stream: getFoodStream(), // Fetch food data
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Calendar(foods: []);
+                      return const Calendar(foods: []); // Show empty calendar
                     }
                     final foods = snapshot.data?.docs.map((doc) {
                           final data = doc.data() as Map<String, dynamic>;
@@ -68,9 +70,11 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               ),
+
+              // Food list container
               Container(
                 decoration: BoxDecoration(
-                  color: HexColor("#97A78D"),
+                  color: HexColor("#97A78D"), // Background color
                   borderRadius: const BorderRadius.all(
                     Radius.circular(20),
                   ),
@@ -79,6 +83,7 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     children: [
+                      // Title
                       Text(
                         "Don't forget these food without expiration date",
                         style: TextStyle(
@@ -86,34 +91,39 @@ class _HomePageState extends State<HomePage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 10), // Spacing
                       StreamBuilder(
-                        stream: getFoodStream(),
+                        stream: getFoodStream(), // Fetch food data
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return const Center(
-                                child: CircularProgressIndicator());
+                                child:
+                                    CircularProgressIndicator()); // Loading indicator
                           }
 
                           if (snapshot.hasError) {
-                            return const Center(child: Text("Error"));
+                            return const Center(
+                                child: Text("Error")); // Error message
                           }
 
                           if (!snapshot.hasData ||
                               snapshot.data!.docs.isEmpty) {
-                            return const Center(child: Text("No food found"));
+                            return const Center(
+                                child:
+                                    Text("No food found")); // No data message
                           }
 
                           final foodDocs = snapshot.data!.docs;
 
                           return ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: foodDocs.length,
+                            shrinkWrap: true, // Prevent infinite height
+                            physics:
+                                const NeverScrollableScrollPhysics(), // Disable scrolling
+                            itemCount: foodDocs.length, // Number of items
                             itemBuilder: (context, index) {
-                              final data = foodDocs[index].data() as Map<String,
-                                  dynamic>; // Explicitly cast to Map<String, dynamic>
+                              final data = foodDocs[index].data()
+                                  as Map<String, dynamic>; // Cast to Map
                               Timestamp startDate = data["startDate"];
                               DateTime star = startDate.toDate();
                               String? imageUrl = data.containsKey("imageUrl")
@@ -136,7 +146,8 @@ class _HomePageState extends State<HomePage> {
                                         margin:
                                             const EdgeInsets.only(bottom: 10),
                                         decoration: BoxDecoration(
-                                          color: HexColor("#EFE1DA"),
+                                          color: HexColor(
+                                              "#EFE1DA"), // Background color
                                           borderRadius: const BorderRadius.all(
                                             Radius.circular(20),
                                           ),
@@ -148,6 +159,8 @@ class _HomePageState extends State<HomePage> {
                                                 ? NetworkImage(food
                                                     .imageUrl!) // Use the image if available
                                                 : null, // Fallback to no image
+                                            backgroundColor: HexColor(
+                                                "#97A78D"), // Background color for the text
                                             child: food.imageUrl == null
                                                 ? Text(
                                                     food.name.substring(0,
@@ -159,8 +172,6 @@ class _HomePageState extends State<HomePage> {
                                                     ),
                                                   )
                                                 : null, // No child if the image is available
-                                            backgroundColor: HexColor(
-                                                "#97A78D"), // Background color for the text
                                           ),
                                           title: Text(
                                             food.name,
@@ -177,7 +188,7 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ),
                                       )
-                                    : null,
+                                    : null, // Skip if expDate exists
                               );
                             },
                           );
@@ -195,8 +206,9 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+// Calendar widget to display food expiration dates
 class Calendar extends StatefulWidget {
-  final List<Food> foods;
+  final List<Food> foods; // List of food items
   const Calendar({super.key, required this.foods});
 
   @override
@@ -204,9 +216,10 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
-  final PageController _pageController = PageController(initialPage: 0);
-  final DateTime _currentDate = DateTime.now();
-  int _currentMonthOffset = 0;
+  final PageController _pageController =
+      PageController(initialPage: 0); // Page controller
+  final DateTime _currentDate = DateTime.now(); // Current date
+  int _currentMonthOffset = 0; // Offset for the displayed month
 
   @override
   Widget build(BuildContext context) {
@@ -219,6 +232,7 @@ class _CalendarState extends State<Calendar> {
     return SafeArea(
       child: Column(
         children: [
+          // Month navigation
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -258,6 +272,8 @@ class _CalendarState extends State<Calendar> {
               ],
             ),
           ),
+
+          // Weekday labels
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -265,13 +281,15 @@ class _CalendarState extends State<Calendar> {
                     style: const TextStyle(fontWeight: FontWeight.bold)))
                 .toList(),
           ),
+
+          // Calendar grid
           SizedBox(
             height: 300,
             child: PageView.builder(
               controller: _pageController,
               onPageChanged: (index) {
                 setState(() {
-                  _currentMonthOffset = index;
+                  _currentMonthOffset = index; // Update month offset
                 });
               },
               itemBuilder: (context, index) {
@@ -280,7 +298,7 @@ class _CalendarState extends State<Calendar> {
                   _currentDate.year,
                   _currentDate.month + index,
                 );
-                return buildCalendar(month);
+                return buildCalendar(month); // Build calendar for the month
               },
             ),
           ),
@@ -289,6 +307,7 @@ class _CalendarState extends State<Calendar> {
     );
   }
 
+  // Build the calendar grid for a specific month
   Widget buildCalendar(DateTime month) {
     int daysInMonth = DateUtils.getDaysInMonth(month.year, month.month);
     DateTime firstDayOfMonth = DateTime(month.year, month.month, 1);
@@ -306,6 +325,7 @@ class _CalendarState extends State<Calendar> {
       final currentDay = DateTime(month.year, month.month, day);
       bool isToday = DateUtils.isSameDay(currentDay, DateTime.now());
 
+      // Check if any food expires on this day
       bool hasExpiringFood = widget.foods.any((food) {
         try {
           if (food.expDate == null) return false;
@@ -345,7 +365,7 @@ class _CalendarState extends State<Calendar> {
                   width: 8,
                   height: 8,
                   decoration: const BoxDecoration(
-                    color: Colors.red,
+                    color: Colors.red, // Indicator for expiring food
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -356,9 +376,9 @@ class _CalendarState extends State<Calendar> {
     }
 
     return GridView.count(
-      crossAxisCount: 7,
+      crossAxisCount: 7, // 7 days in a week
       padding: const EdgeInsets.all(16),
-      physics: const NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(), // Disable scrolling
       shrinkWrap: true,
       children: dayWidgets,
     );

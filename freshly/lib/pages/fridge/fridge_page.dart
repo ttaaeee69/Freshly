@@ -19,16 +19,17 @@ class FridgePage extends StatefulWidget {
 }
 
 class _FridgePageState extends State<FridgePage> {
-  List<Food> _ingredients = [];
-  List<Food> _cooked = [];
-  User user = FirebaseAuth.instance.currentUser!;
+  List<Food> _ingredients = []; // List of ingredients
+  List<Food> _cooked = []; // List of cooked food
+  User user = FirebaseAuth.instance.currentUser!; // Current user
 
   @override
   void initState() {
     super.initState();
-    _refreshFood();
+    _refreshFood(); // Fetch food data on initialization
   }
 
+  // Calculate expiration status
   String expCalculate(Timestamp startDate, Timestamp expDate) {
     DateTime start = startDate.toDate();
     DateTime now = DateTime.now();
@@ -36,18 +37,19 @@ class _FridgePageState extends State<FridgePage> {
     bool isExpired = now.isAfter(exp);
 
     if (isExpired) {
-      return "expired";
+      return "expired"; // Food is expired
     } else {
       int daysLeft = exp.difference(start).inDays;
-      return "$daysLeft days left";
+      return "$daysLeft days left"; // Days left until expiration
     }
   }
 
+  // Fetch food data from Firestore
   Future<void> _refreshFood() async {
     final snapshot = await FirebaseFirestore.instance
         .collection("food")
-        .where("uid", isEqualTo: user.uid)
-        .orderBy("startDate", descending: true)
+        .where("uid", isEqualTo: user.uid) // Filter by user ID
+        .orderBy("startDate", descending: true) // Order by start date
         .get();
 
     List<Food> loadedIngredients = [];
@@ -60,6 +62,8 @@ class _FridgePageState extends State<FridgePage> {
       Timestamp startDate = data["startDate"];
       DateTime star = startDate.toDate();
       String formatStartDate = DateFormat('dd/MM/yyyy').format(star);
+
+      // Format expiration date if available
       if (data["expDate"] == null) {
         formatExpDate = null;
       } else {
@@ -68,6 +72,7 @@ class _FridgePageState extends State<FridgePage> {
         formatExpDate = DateFormat('dd/MM/yyyy').format(exp);
       }
 
+      // Add to ingredients or cooked list based on type
       if (data["type"] == "ingredient") {
         loadedIngredients.add(
           Food(
@@ -77,40 +82,37 @@ class _FridgePageState extends State<FridgePage> {
             startDate: formatStartDate,
             expDate: formatExpDate,
             isExpired: data["expDate"] != null
-                ? expCalculate(
-                    startDate,
-                    data["expDate"],
-                  )
+                ? expCalculate(startDate, data["expDate"])
                 : "",
             type: data["type"],
             imageUrl: data["imageUrl"],
           ),
         );
       } else if (data["type"] == "cooked") {
-        loadedCooked.add(Food(
-          uid: user.uid,
-          fid: doc.id,
-          name: data["name"],
-          startDate: formatStartDate,
-          expDate: formatExpDate,
-          isExpired: data["expDate"] != null
-              ? expCalculate(
-                  startDate,
-                  data["expDate"],
-                )
-              : "",
-          type: data["type"],
-          imageUrl: data["imageUrl"],
-        ));
+        loadedCooked.add(
+          Food(
+            uid: user.uid,
+            fid: doc.id,
+            name: data["name"],
+            startDate: formatStartDate,
+            expDate: formatExpDate,
+            isExpired: data["expDate"] != null
+                ? expCalculate(startDate, data["expDate"])
+                : "",
+            type: data["type"],
+            imageUrl: data["imageUrl"],
+          ),
+        );
       }
     }
 
     setState(() {
-      _ingredients = loadedIngredients;
-      _cooked = loadedCooked;
+      _ingredients = loadedIngredients; // Update ingredients list
+      _cooked = loadedCooked; // Update cooked food list
     });
   }
 
+  // Delete food item from Firestore
   Future<void> _deleteFood(String fid) async {
     await FirebaseFirestore.instance.collection("food").doc(fid).delete();
   }
@@ -123,9 +125,9 @@ class _FridgePageState extends State<FridgePage> {
           padding: const EdgeInsets.all(30.0),
           child: Column(
             children: [
-              _buildIngredientSection(),
+              _buildIngredientSection(), // Build ingredients section
               const SizedBox(height: 30), // Add spacing between sections
-              _buildCookedSection(),
+              _buildCookedSection(), // Build cooked food section
             ],
           ),
         ),
@@ -133,10 +135,11 @@ class _FridgePageState extends State<FridgePage> {
     );
   }
 
+  // Build the ingredients section
   Widget _buildIngredientSection() {
     return Container(
       decoration: BoxDecoration(
-        color: HexColor("#E4C1C1"),
+        color: HexColor("#E4C1C1"), // Background color
         borderRadius: const BorderRadius.all(
           Radius.circular(20),
         ),
@@ -161,12 +164,13 @@ class _FridgePageState extends State<FridgePage> {
             const SizedBox(height: 10),
             _ingredients.isEmpty
                 ? const Center(
-                    child: Text("No ingredients available"),
+                    child: Text("No ingredients available"), // No data message
                   )
                 : ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _ingredients.length,
+                    shrinkWrap: true, // Prevent infinite height
+                    physics:
+                        const NeverScrollableScrollPhysics(), // Disable scrolling
+                    itemCount: _ingredients.length, // Number of items
                     itemBuilder: (context, index) {
                       final ingredient = _ingredients[index];
                       final isExpired = ingredient.isExpired;
@@ -191,7 +195,8 @@ class _FridgePageState extends State<FridgePage> {
                                   );
                                 },
                                 borderRadius: BorderRadius.circular(20.0),
-                                backgroundColor: Colors.red,
+                                backgroundColor:
+                                    Colors.red, // Delete action color
                                 foregroundColor: Colors.white,
                                 icon: Icons.delete,
                               ),
@@ -211,7 +216,8 @@ class _FridgePageState extends State<FridgePage> {
                                   ).then((_) => _refreshFood());
                                 },
                                 borderRadius: BorderRadius.circular(20.0),
-                                backgroundColor: Colors.blue,
+                                backgroundColor:
+                                    Colors.blue, // Edit action color
                                 foregroundColor: Colors.white,
                                 icon: Icons.edit,
                               ),
@@ -220,25 +226,26 @@ class _FridgePageState extends State<FridgePage> {
                           child: Container(
                             decoration: BoxDecoration(
                               color: isExpired == "expired"
-                                  ? HexColor("#D6805B")
-                                  : HexColor("#EEF1DA"),
+                                  ? HexColor("#D6805B") // Expired color
+                                  : HexColor("#EEF1DA"), // Default color
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: ListTile(
                               leading: CircleAvatar(
                                 backgroundImage: ingredient.imageUrl != null
                                     ? NetworkImage(ingredient.imageUrl!)
-                                    : null,
+                                    : null, // Display image if available
+                                backgroundColor: HexColor("#97A78D"),
                                 child: ingredient.imageUrl == null
                                     ? Text(
-                                        ingredient.name.substring(0, 1),
+                                        ingredient.name
+                                            .substring(0, 1), // First letter
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
                                         ),
                                       )
                                     : null,
-                                backgroundColor: HexColor("#97A78D"),
                               ),
                               title: Text(
                                 ingredient.name,
@@ -270,7 +277,7 @@ class _FridgePageState extends State<FridgePage> {
               child: Container(
                 height: 64,
                 decoration: BoxDecoration(
-                  color: HexColor("#D9D9D9"),
+                  color: HexColor("#D9D9D9"), // Add button background color
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
@@ -288,10 +295,11 @@ class _FridgePageState extends State<FridgePage> {
     );
   }
 
+  // Build the cooked food section
   Widget _buildCookedSection() {
     return Container(
       decoration: BoxDecoration(
-        color: HexColor("#ADB2D4"),
+        color: HexColor("#ADB2D4"), // Background color
         borderRadius: const BorderRadius.all(
           Radius.circular(20),
         ),
@@ -316,12 +324,13 @@ class _FridgePageState extends State<FridgePage> {
             const SizedBox(height: 10),
             _cooked.isEmpty
                 ? const Center(
-                    child: Text("No cooked food available"),
+                    child: Text("No cooked food available"), // No data message
                   )
                 : ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _cooked.length,
+                    shrinkWrap: true, // Prevent infinite height
+                    physics:
+                        const NeverScrollableScrollPhysics(), // Disable scrolling
+                    itemCount: _cooked.length, // Number of items
                     itemBuilder: (context, index) {
                       final cooked = _cooked[index];
                       final isExpired = cooked.isExpired;
@@ -345,7 +354,8 @@ class _FridgePageState extends State<FridgePage> {
                                   );
                                 },
                                 borderRadius: BorderRadius.circular(20.0),
-                                backgroundColor: Colors.red,
+                                backgroundColor:
+                                    Colors.red, // Delete action color
                                 foregroundColor: Colors.white,
                                 icon: Icons.delete,
                               ),
@@ -365,7 +375,8 @@ class _FridgePageState extends State<FridgePage> {
                                   ).then((_) => _refreshFood());
                                 },
                                 borderRadius: BorderRadius.circular(20.0),
-                                backgroundColor: Colors.blue,
+                                backgroundColor:
+                                    Colors.blue, // Edit action color
                                 foregroundColor: Colors.white,
                                 icon: Icons.edit,
                               ),
@@ -374,25 +385,26 @@ class _FridgePageState extends State<FridgePage> {
                           child: Container(
                             decoration: BoxDecoration(
                               color: isExpired == "expired"
-                                  ? HexColor("#D6805B")
-                                  : HexColor("#EEF1DA"),
+                                  ? HexColor("#D6805B") // Expired color
+                                  : HexColor("#EEF1DA"), // Default color
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: ListTile(
                               leading: CircleAvatar(
                                 backgroundImage: cooked.imageUrl != null
                                     ? NetworkImage(cooked.imageUrl!)
-                                    : null,
+                                    : null, // Display image if available
+                                backgroundColor: HexColor("#97A78D"),
                                 child: cooked.imageUrl == null
                                     ? Text(
-                                        cooked.name.substring(0, 1),
+                                        cooked.name
+                                            .substring(0, 1), // First letter
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
                                         ),
                                       )
                                     : null,
-                                backgroundColor: HexColor("#97A78D"),
                               ),
                               title: Text(
                                 cooked.name,
@@ -423,7 +435,7 @@ class _FridgePageState extends State<FridgePage> {
               child: Container(
                 height: 64,
                 decoration: BoxDecoration(
-                  color: HexColor("#D9D9D9"),
+                  color: HexColor("#D9D9D9"), // Add button background color
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
@@ -655,58 +667,3 @@ class _EditFoodDialogState extends State<EditFoodDialog> {
     );
   }
 }
-
-// const List<String> _ingredientFilter = [
-//   "earliest exp date",
-//   "lastest purchase",
-//   "oldest purchase"
-// ];
-
-// class IngredientDropdown extends StatefulWidget {
-//   const IngredientDropdown({super.key});
-
-//   @override
-//   State<IngredientDropdown> createState() => _IngredientDropdownState();
-// }
-
-// class _IngredientDropdownState extends State<IngredientDropdown> {
-//   String dropdownValue = _ingredientFilter.first;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       decoration: BoxDecoration(
-//         color: HexColor("#EEF1DA"),
-//         borderRadius: BorderRadius.circular(20),
-//       ),
-//       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-//       child: DropdownButton<String>(
-//         value: dropdownValue,
-//         icon: Padding(
-//           padding: const EdgeInsets.only(left: 8.0),
-//           child: Icon(Icons.filter_list),
-//         ),
-//         elevation: 16,
-//         isDense: true,
-//         borderRadius: BorderRadius.circular(20),
-//         dropdownColor: HexColor("#EEF1DA"),
-//         onChanged: (String? value) {
-//           setState(() => dropdownValue = value!);
-//         },
-//         items: _ingredientFilter.map<DropdownMenuItem<String>>(
-//           (String value) {
-//             return DropdownMenuItem<String>(
-//               value: value,
-//               child: Text(
-//                 value,
-//                 style: TextStyle(
-//                   fontSize: 14,
-//                 ),
-//               ),
-//             );
-//           },
-//         ).toList(),
-//       ),
-//     );
-//   }
-// }
