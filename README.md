@@ -51,7 +51,7 @@ Freshly is a Flutter-based mobile application designed to help users efficiently
     - Create a `.env` file in the root of your project (next to `pubspec.yaml`).
     - Add your Spoonacular API key to the `.env` file:
         ```env
-        SPOONACULAR_API_KEY=your_spoonacular_api_key
+        SPOONACULAR_API_KEY = your_spoonacular_api_key
         ```
 
 5. Run the app:
