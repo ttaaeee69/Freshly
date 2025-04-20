@@ -51,18 +51,29 @@ class _FridgePageState extends State<FridgePage> {
     List<Food> loadedIngredients = [];
     List<Food> loadedCooked = [];
 
+    late String? formatExpDate;
+
     for (var doc in snapshot.docs) {
       final data = doc.data();
       Timestamp startDate = data["startDate"];
       DateTime star = startDate.toDate();
-      String formatDate = DateFormat('dd/MM/yyyy').format(star);
+      String formatStartDate = DateFormat('dd/MM/yyyy').format(star);
+      if (data["expDate"] == null) {
+        formatExpDate = null;
+      } else {
+        Timestamp expDate = data["expDate"];
+        DateTime exp = expDate.toDate();
+        formatExpDate = DateFormat('dd/MM/yyyy').format(exp);
+      }
+
       if (data["type"] == "ingredient") {
         loadedIngredients.add(
           Food(
             uid: user.uid,
             fid: doc.id,
             name: data["name"],
-            startDate: formatDate,
+            startDate: formatStartDate,
+            expDate: formatExpDate,
             isExpired: data["expDate"] != null
                 ? expCalculate(
                     startDate,
@@ -77,7 +88,8 @@ class _FridgePageState extends State<FridgePage> {
           uid: user.uid,
           fid: doc.id,
           name: data["name"],
-          startDate: formatDate,
+          startDate: formatStartDate,
+          expDate: formatExpDate,
           isExpired: data["expDate"] != null
               ? expCalculate(
                   startDate,
@@ -87,7 +99,6 @@ class _FridgePageState extends State<FridgePage> {
           type: data["type"],
         ));
       }
-      print(doc.id);
     }
 
     setState(() {
@@ -206,7 +217,8 @@ class _FridgePageState extends State<FridgePage> {
                                               context: context,
                                               builder: (context) =>
                                                   EditFoodDialog(
-                                                      food: ingredient),
+                                                food: ingredient,
+                                              ),
                                             ).then((_) => _refreshFood());
                                           },
                                           borderRadius:
@@ -347,7 +359,9 @@ class _FridgePageState extends State<FridgePage> {
                                             showDialog(
                                               context: context,
                                               builder: (context) =>
-                                                  EditFoodDialog(food: cooked),
+                                                  EditFoodDialog(
+                                                food: cooked,
+                                              ),
                                             ).then((_) => _refreshFood());
                                           },
                                           borderRadius:
@@ -465,8 +479,10 @@ class _EditFoodDialogState extends State<EditFoodDialog> {
     super.initState();
     _nameController = TextEditingController(text: widget.food.name);
     _startDate = DateFormat('dd/MM/yyyy').parse(widget.food.startDate);
-    if (widget.food.isExpired != null && widget.food.isExpired!.isNotEmpty) {
-      _expDate = _startDate.add(const Duration(days: 7)); // Default expiration
+    if (widget.food.expDate != null) {
+      _expDate = DateFormat('dd/MM/yyyy').parse(widget.food.expDate!);
+    } else {
+      _expDate = null;
     }
   }
 
@@ -485,7 +501,7 @@ class _EditFoodDialogState extends State<EditFoodDialog> {
   Future<void> _pickDate(bool isStartDate) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: isStartDate ? _startDate : _expDate ?? _startDate,
+      initialDate: isStartDate ? _startDate : _expDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'pages/account/profile_page.dart';
 import 'pages/fridge/fridge_page.dart';
-import 'pages/home_page.dart';
+import 'pages/home/home_page.dart';
 import 'pages/menu/menu_page.dart';
 
 class PageNavigator extends StatefulWidget {
