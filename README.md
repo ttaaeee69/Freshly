@@ -46,11 +46,13 @@ Freshly is a Flutter-based mobile application designed to help users efficiently
     - Add the `google-services.json` file (for Android) to `android/app/`.
     - Add the `GoogleService-Info.plist` file (for iOS) to `ios/Runner/`.
 
-4. Add your Spoonacular API key in `lib/pages/menu/menu_page.dart`:
+4. Set up the `.env` file:
 
-    ```dart
-    final String apiKey = "your_api_key_here";
-    ```
+    - Create a `.env` file in the root of your project (next to `pubspec.yaml`).
+    - Add your Spoonacular API key to the `.env` file:
+        ```env
+        SPOONACULAR_API_KEY=your_spoonacular_api_key
+        ```
 
 5. Run the app:
 
@@ -119,60 +121,22 @@ lib/
 
 ---
 
-## 📸 Screenshots
+## 📧 Contributors
 
-### 🏠 Home Page
+### Varich Maleevan
 
-![Home Page](https://via.placeholder.com/400x300)
+-   **Student ID**: 6687097
+-   **Email**: varich.mal@student.mahidol.edu
+-   **GitHub**: [taetaevrh](https://github.com/taetaevrh)
+-   **University Email**: varich.malee@gmail.com
+-   **University GitHub**: [ttaaeee69](https://github.com/ttaaeee69)
 
-### 🧊 Fridge Management
+### Onnicha Intuwattanakul
 
-![Fridge Management](https://via.placeholder.com/400x300)
-
-### 🍽️ Recipe Suggestions
-
-![Recipe Suggestions](https://via.placeholder.com/400x300)
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! To contribute:
-
-1. Fork the repository.
-2. Create a new branch:
-    ```bash
-    git checkout -b feature-name
-    ```
-3. Commit your changes:
-    ```bash
-    git commit -m "Add feature-name"
-    ```
-4. Push to your branch:
-    ```bash
-    git push origin feature-name
-    ```
-5. Open a pull request.
+-   **Student ID**: 6687108
+-   **Email**: ❌
+-   **GitHub**: [HOYEONNN](https://github.com/HOYEONNN)
+-   **University Email**: onnicha.int@student.mahidol.edu
+-   **University GitHub**: ❌
 
 ---
-
-## 📜 License
-
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
-
----
-
-## 📧 Contact
-
-For any inquiries or issues, please contact:
-
--   **Name**: Your Name
--   **Email**: your.email@example.com
--   **GitHub**: [your-username](https://github.com/your-username)
-
----
-
-### 📝 Notes:
-
-1. Replace placeholders like `your-username`, `your.email@example.com`, and screenshot URLs with actual values.
-2. Add any additional sections or details specific to your project if needed.
