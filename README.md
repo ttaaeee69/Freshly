@@ -62,6 +62,12 @@ Freshly is a Flutter-based mobile application designed to help users efficiently
 
 ---
 
+### ⚠️ Important Note
+
+- **Camera functionality** and **profile updates** may not work as expected when using an emulator. Please use a real device for these features.
+
+---
+
 ## 🔗 APIs Used
 
 ### Firebase Services
